@@ -57,7 +57,9 @@
     "validator": "^3.22.1",
     "yui": "^3.18.1",
     "socket.io": "^1.2.1",
-    "util": "^0.10.3"
+    "util": "^0.10.3",
+    "amdefine": "^0.1.0",
+    "requirejs": "^2.1.15"
   },
   "devDependencies": {
     "blessed": "^0.0.37",

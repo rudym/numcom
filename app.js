@@ -3,6 +3,7 @@
  */
 
 var express = require('express');
+var requirejs = require('requirejs');
 var cookieParser = require('cookie-parser');
 var compress = require('compression');
 var session = require('express-session');
@@ -134,6 +135,8 @@ app.post('/account/password', passportConf.isAuthenticated, userController.postU
 app.post('/account/delete', passportConf.isAuthenticated, userController.postDeleteAccount);
 app.get('/account/unlink/:provider', passportConf.isAuthenticated, userController.getOauthUnlink);
 
+app.use('/static/shared/', express.static(__dirname + '/public/js/shared/'));
+
 /**
  * API examples routes.
  */
@@ -223,6 +226,10 @@ server.listen(app.get('port'), function() {
 });
 
 module.exports = app;
+
+requirejs.config({
+    baseUrl: 'public/js/shared/'
+});
 
 
 var game = require('./numcom/game.js');	// NUmberCommander game

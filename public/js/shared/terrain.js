@@ -1,8 +1,13 @@
 /**************************************************
-** LEVEL GENERATOR CLASS
+** Terrain model and generation classes.
 **************************************************/
-var Level = function Level () {
-    var Terrain = function Terrain(size) {
+
+if (typeof define !== 'function') {
+    var define = require('amdefine')(module);
+}
+
+define(function(require){ // require is unused
+    var Terrain = function (size) {
         var tiles = [];
         
         this.size = size;
@@ -37,9 +42,9 @@ var Level = function Level () {
             return this.tile(tile.x, tile.y + 1);
         };
     }
-
-
-    var Tile = function Tile (
+    
+    
+    var Tile = function (
                     x, y, state, payload, 
                     terrainType, terrainSpriteIndices,
                     floraType, floraSpriteIndices
@@ -48,11 +53,11 @@ var Level = function Level () {
         this.y = y;
         this.state = state || '';
         this.payload = payload || {};
-
+    
         this.terrainType = terrainType || '';
         this.terrainSpriteIndices = terrainSpriteIndices; 
         if (!this.terrainSpriteIndices) this.terrainSpriteIndices = [0, 0];
-
+    
         this.floraType = floraType || undefined;
         this.floraSpriteIndices = floraSpriteIndices;
         if (!this.floraSpriteIndices) this.floraSpriteIndices = [0, 0];
@@ -82,17 +87,15 @@ var Level = function Level () {
         }
         
         this.walkable = false;
-        
-        
-
+    
         this.clean = function() {
             this.state = '';
             this.payload = {};
         };
     }
+    
 
-
-    var TileMapGenerator = function TileMapGenerator() {
+    var TileMapGenerator = function () {
         this.generateMap = function (size) { //laguna
             var terrain = new Terrain(5);
             for (var i = 0; i < 5; i++) {
@@ -122,14 +125,14 @@ var Level = function Level () {
                 }
             }
             return terrain;
-        }
-    }
+        };
+    };
 
-// Define which variables and methods can be accessed
-	return {
-		TileMapGenerator: TileMapGenerator
-	};
-};
+    // Define which variables and methods can be accessed
+    return {
+        TileMapGenerator: TileMapGenerator,
+        Terrain: Terrain,
+        Tile: Tile
+    };
+});
 
-
-exports.Level = Level;
