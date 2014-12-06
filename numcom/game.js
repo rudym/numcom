@@ -1,9 +1,10 @@
 /**************************************************
 ** NODE.JS REQUIREMENTS
 **************************************************/
+var requirejs = require('requirejs');
 var util = require("util"),					                // Utility resources (logging, object inspection, etc)
 	Player = require("./Player").Player,		            // Player class
-	level = require('../public/js/shared/terrain.js');	// Game level class
+	level = requirejs('terrain');	// Game level class
 
 
 /**************************************************
