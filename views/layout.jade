@@ -7,6 +7,13 @@ html
     meta(name='csrf-token', content=_csrf)
     title #{title} - Hackathon Starter
     != css('main')
+    script(src='/socket.io/socket.io.js')
+    script.
+        var socket = io.connect(window.location.href);
+        socket.on('greet', function (data) {
+          console.log(data);
+          socket.emit('respond', { message: 'Hey there, server!' });
+        });
   body
     include partials/navbar
 

@@ -77,7 +77,9 @@ function onNewPlayer(data) {
 	
 	if (typeof Game === "undefined" && players.length >= 0) {
 		util.log('Generate level');
-		Game = new level.generateMap();
+		var level = new Level();
+		var mapgenerator = new level.TileMapGenerator();
+		Game = mapgenerator.generateMap();
 	}
 }
 
