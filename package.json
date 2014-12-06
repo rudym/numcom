@@ -58,6 +58,9 @@
     "yui": "^3.18.1",
     "socket.io": "^1.2.1",
     "util": "^0.10.3",
+    "jsonwebtoken": "^1.2.0",
+    "socketio-jwt": "^2.3.5",
+    "json-middleware": "^1.0.2",
     "amdefine": "^0.1.0",
     "requirejs": "^2.1.15"
   },
