@@ -2,11 +2,11 @@ function TilesAssets (game, prefix) {
     prefix = prefix || 'land_';
 
     this.tilesFactory = {
-        'coldwatergrass': new TileSheetFactory(game, prefix + 'coldwatergrass', 'assets/coldwatergrass.png', 5, 6),
-        'icegrass': new TileSheetFactory(game, prefix + 'icegrass', 'assets/icegrass.png', 5, 6),
-        'plowed_soil': new TileSheetFactory(game, prefix + 'plowed_soil', 'assets/plowed_soil.png', 5, 6),
-        'tallgrass': new TileSheetFactory(game, prefix + 'tallgrass', 'assets/tallgrass.png', 5, 6),
-        'wheat': new TileSheetFactory(game, prefix + 'wheat', 'assets/wheat.png', 5, 6),
+        'coldwatergrass': new TileSheetFactory(game, prefix + 'coldwatergrass', '/assets/coldwatergrass.png', 5, 6),
+        'icegrass': new TileSheetFactory(game, prefix + 'icegrass', '/assets/icegrass.png', 5, 6),
+        'plowed_soil': new TileSheetFactory(game, prefix + 'plowed_soil', '/assets/plowed_soil.png', 5, 6),
+        'tallgrass': new TileSheetFactory(game, prefix + 'tallgrass', '/assets/tallgrass.png', 5, 6),
+        'wheat': new TileSheetFactory(game, prefix + 'wheat', '/assets/wheat.png', 5, 6),
     };
     
     this.preload = function () {

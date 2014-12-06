@@ -30,6 +30,8 @@ var userController = require('./controllers/user');
 var apiController = require('./controllers/api');
 var contactController = require('./controllers/contact');
 
+var gameController = require('./controllers/game');
+
 /**
  * API keys and Passport configuration.
  */
@@ -69,7 +71,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(compress());
 app.use(connectAssets({
-  paths: [path.join(__dirname, 'public/css'), path.join(__dirname, 'public/js')]
+  paths: [path.join(__dirname, 'public/css'), path.join(__dirname, 'public/js'), path.join(__dirname, 'public/assets')]
 }));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -112,6 +114,9 @@ app.use(express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 }))
  */
 
 app.get('/', homeController.index);
+
+app.get('/go', gameController.goPlay);
+
 app.get('/login', userController.getLogin);
 app.post('/login', userController.postLogin);
 app.get('/logout', userController.logout);
