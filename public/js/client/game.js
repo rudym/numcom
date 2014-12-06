@@ -16,7 +16,7 @@ window.onload = function() {
         
         terrain = game.add.group();
 
-        generator = new TileMapGenerator();
+        generator = new Level();
         var terrainSprites = terrainToSprites(game, landscapeAssets, generator.generateMap());
         
         terrain.addChild(terrainSprites);

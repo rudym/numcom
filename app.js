@@ -219,12 +219,10 @@ server.listen(app.get('port'), function() {
 
 module.exports = app;
 
-io.on('connection', function(socket) {
-  socket.emit('greet', { hello: 'Hey there browser!' });
-  socket.on('respond', function(data) {
-    console.log(data);
-  });
-  socket.on('disconnect', function() {
-    console.log('Socket disconnected');
-  });
-});
+
+var game = require('./numcom/game.js');	// NUmberCommander game
+
+/**************************************************
+** RUN THE GAME
+**************************************************/
+game(io);
