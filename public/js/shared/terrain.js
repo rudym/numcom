@@ -210,7 +210,7 @@ define(function(require){ // require is unused
         
         this.generateMap = function (size) { //laguna
         //  size is ignored now
-            var size = 32;
+            var size = 16;
             var terrain = new Terrain(size);
             for (var i = 0; i < size; i++) {
                 for (var j = 0; j < size; j++) {

@@ -284,6 +284,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
                 }
             }*/
         
+        /*
             if (cursors.left.isDown)
             {
                 player.sprite.animations.play('moveLeft');
@@ -308,6 +309,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
                 player.sprite.animations.play('moveDown');
                 tweenTo(player.sprite, rebuiltTerrain.bottom(player.obj.tile));
             }
+            */
             /*
         
             if (cursors.up.isDown)

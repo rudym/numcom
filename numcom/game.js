@@ -149,10 +149,10 @@ function onNumCom(data) {
 	}
 	
 	var arrayPath = [1, 2, 3];
-	this.emit("move player", {id: movePlayer.id, arPath: arrayPath});
+	socket.emit("move player", {id: movePlayer.id, arPath: arrayPath});
 	
 	
-	this.emit("DEBUGTOCLIENTCONSOLE", data);
+	socket.emit("DEBUGTOCLIENTCONSOLE", data);
 }
 
 
