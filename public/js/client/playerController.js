@@ -1,6 +1,7 @@
 function PlayerController(game, socket) {
     var pc = this;
     var cursors = game.input.keyboard.createCursorKeys();
+    var num = "";
     
     this.preload = function () {
     };
@@ -27,8 +28,6 @@ function PlayerController(game, socket) {
             socket.emit("player clicked", "Player has clicked up button");
         }
         
-        
-        
         //camera works
         if (cursors.up.isDown)
         {
@@ -46,5 +45,20 @@ function PlayerController(game, socket) {
         {
            game.camera.x += 4;
         }
+        
+        //  Capture all key presses
+        game.input.keyboard.addCallbacks(this, null, null, keyPress);
+
     };
+    
+    
+    function keyPress(char) {
+        if( char.charCodeAt(0) >= 48 && char.charCodeAt(0) <= 57) { // NUMBERS
+            num += char;
+        }
+        else if(char.charCodeAt(0) == 13) { //ENTER
+            socket.emit("numcom", num);
+            num = "";
+        }
+    }   
 }

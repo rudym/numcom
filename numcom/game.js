@@ -40,6 +40,8 @@ function onSocketConnection(client) {
 	client.on("move player", onMovePlayer);
 	
 	client.on("player clicked", onPlayerClicked);
+	
+	client.on("numcom", onNumCom);
 }
 
 // Socket client has disconnected
@@ -131,6 +133,26 @@ function onMovePlayer(data) {
 	// Broadcast updated position to connected socket clients
 	//this.broadcast.emit("gameState", tttGame.getGameState());
 	socket.emit("gameState", Game.getGameState());
+}
+
+// Number command event
+function onNumCom(data) {
+    util.log(data);
+    
+    // Find player in array
+	var movePlayer = playerById(this.id);
+    
+	// Player not found
+	if (!movePlayer) {
+		util.log("Player not found: "+this.id);
+		return;
+	}
+	
+	var arrayPath = [1, 2, 3];
+	this.emit("move player", {id: movePlayer.id, arPath: arrayPath});
+	
+	
+	this.emit("DEBUGTOCLIENTCONSOLE", data);
 }
 
 
