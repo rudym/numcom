@@ -45,17 +45,20 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
         
         var landscapeAssets;
         var gemsAssets;
+        var doorAssets;
         
         function preload () {
             game.load.spritesheet('dude', 'assets/charset.png', 32, 32);
 
             landscapeAssets = new TilesAssets(game);
             gemsAssets = new GemsAssets(game);
+            doorAssets = new DoorAsset(game);
             
             game.load.spritesheet('dude', 'assets/dude.png', 64, 64);
             
             gemsAssets.preload();
             landscapeAssets.preload();
+            doorAssets.preload();
             
             gui.preload();
         }
