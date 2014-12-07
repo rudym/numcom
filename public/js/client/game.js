@@ -160,6 +160,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             };
 
             terrain.addChild(playerSprite);
+            
+            socket.removeListener("gameStateInit", onGameStateInit);
         }
         
         // Socket connected
