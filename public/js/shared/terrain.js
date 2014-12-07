@@ -93,6 +93,21 @@ define(function(require){ // require is unused
             this.state = '';
             this.payload = {};
         };
+        
+        this.copyFrom = function(tileObj) {
+            this.x = tileObj.x;
+            this.y = tileObj.y;
+            this.state = tileObj.state;
+            this.payload = tileObj.payload;
+        
+            this.terrainType = tileObj.terrainType;
+            this.terrainSpriteIndices = tileObj.terrainSpriteIndices; 
+        
+            this.floraType = tileObj.floraType;
+            this.floraSpriteIndices = tileObj.floraSpriteIndices;
+            
+            this.updateWalkable();
+        };
     }
     
 

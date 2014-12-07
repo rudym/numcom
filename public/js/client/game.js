@@ -99,7 +99,7 @@ requirejs(['terrain'], function(terrainModule) {
             //player.body.collideWorldBounds = true;
         
             //  Create some baddies to waste :)
-            //enemies = [];
+            enemies = [];
         
             player.bringToTop();
         
@@ -136,7 +136,12 @@ requirejs(['terrain'], function(terrainModule) {
         function onGameStateInit(data) {
             console.log("Recieved game state from socket server");
             
-            var terrainSprites = terrainToSprites(game, landscapeAssets, data);
+            var rebuiltTerrain = new terrainModule.Terrain(data.size);
+            for (var i = 0; i < data.tiles.length; i++) {
+                rebuiltTerrain.tiles[i].copyFrom(data.tiles[i]);
+            }
+            
+            var terrainSprites = terrainToSprites(game, landscapeAssets, rebuiltTerrain);
             terrain.addChild(terrainSprites);
         }
         
