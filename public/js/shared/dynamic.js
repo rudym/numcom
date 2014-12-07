@@ -3,12 +3,15 @@ if (typeof define !== 'function') {
 }
 
 define(function(require){ // require is unused
-    var artifacts = require('artifact');
+    var artifacts = require('artifact'),
+        terrainModule = require('terrain')
+    ;
     
     function DynamicMap (terrain) { // container for dynamic objects
         this.players = []; // players list
         this.artifacts = []; // gems and doors
         this.terrain = terrain;
+        this.numbersGrid = undefined;
 
         this.newPlayerCallbacks = [];
         this.newArtifactCallbacks = [];
@@ -33,7 +36,71 @@ define(function(require){ // require is unused
            }
         };
         
+        this.hasArtifact = function (x, y) { //tile x, tile y you know
+            var terrainTile = this.terrain.tile(x,y);
+            if (!terrainTile.walkable) return false;
+            for (var i = this.artifacts.length - 1; i >= 0; i--) {
+                var artifact = this.artifacts[i];
+                if (artifact.tile.x == x && artifact.tile.y == y) {
+                    return artifact;
+                }
+            }
+            return false;
+        };
+        
+        
     }
+    
+    function GameWorldController (dynamicMap) {
+        
+        this.playerDoTurn = function (player, turn) {
+            
+        };
+    }
+    
+    function NumberGrid (terrain) {
+        terrainModule.TileGrid.call(this, terrain.size, Number);
+        
+        var tiles = this.tiles;
+        
+        function emptyCells() {
+            for (var i = 0; i < tiles.length; i++) {
+                tiles[i] = -1; // empty all cells
+            }
+        }
+        
+        function newNumber() {
+            return Math.floor(Math.random() * 12 + 1); // from 1 to 12
+        }
+        
+        this.spawnMissed = function() {
+            var spawned;
+            
+            var walkableTiles = terrain.getAllWalkableTiles();
+            for (var i = 0; i < walkableTiles.length; i++) {
+                var terrainTile = walkableTiles[i];
+                var number = this.tile(terrainTile.x, terrainTile.y);
+                if (number < 0) {
+                    var n = newNumber();
+                    this.setTile(terrainTile.x, terrainTile.y, n);
+                    if (typeof spawned === 'undefined') {
+                        spawned = [];
+                    }
+                    spawned.push(n);
+                }
+            }
+            
+            return spawned;
+        }
+        
+        emptyCells();
+    }
+    
+    NumberGrid.buildFromData = function(plainObject) {
+        var ng = new NumberGrid(plainObject);
+        ng.tiles = plainObject.tiles.concat();
+        return ng;
+    };
     
     function DynamicMapGenerator (terrain) {
         this.terrain = terrain;
@@ -79,12 +146,15 @@ define(function(require){ // require is unused
         this.generateDynamicMap = function (terrain) {
             var dynamicMap = new DynamicMap(terrain);
             this.generateArtifacts(dynamicMap);
+            dynamicMap.numbersGrid = new NumberGrid(dynamicMap.terrain);
+            dynamicMap.numbersGrid.spawnMissed();
             return dynamicMap;
         }
     }
     
     return {
         'DynamicMap': DynamicMap,
+        'NumberGrid': NumberGrid,
         'DynamicMapGenerator': DynamicMapGenerator
     }
 });

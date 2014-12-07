@@ -18,13 +18,21 @@ define(function(require){ // require is unused
             for (var col = 0; col < size; col++) {
                 var tile = {};
                 tileCls.call(tile, col, row);
-                tiles.push(t);
+                tiles.push(tile);
             }
         }
         
         this.tile = function (x, y) {
             return tiles[x + y * size];
         };
+        
+        this.setTile = function (x, y, value) {
+            tiles[x + y * size] = value;
+        };
+        
+        this.getSize = function () { 
+            return size; 
+        }
         
         this.left = function (tile) {
             if (tile.x - 1 < 0) return undefined;

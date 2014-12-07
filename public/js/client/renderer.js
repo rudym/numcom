@@ -6,32 +6,51 @@ function gemToSprite (game, gemsAssets, artifact) {
 function dynamicMapToSprites (game, gemsAssets, doorAsset, dynamicMap) {
     var group = new Phaser.Group(game);
     
+    var artifactsGroup = new Phaser.Group(game);
+    
     for (var i = 0; i < dynamicMap.artifacts.length; i++) {
         var artifact = dynamicMap.artifacts[i];
         if (artifact.artifactType == 'gems') { // only gems are supported now TODO:
-            group.addChild(gemToSprite(game, gemsAssets, artifact));
+            artifactsGroup.addChild(gemToSprite(game, gemsAssets, artifact));
         } else if (artifact.artifactType == 'door') {
-            group.addChild(doorAsset.doorToSprite(artifact, artifact.tile.x * 32, artifact.tile.y * 32));
+            artifactsGroup.addChild(doorAsset.doorToSprite(artifact, artifact.tile.x * 32, artifact.tile.y * 32));
         }
     }
+    group.addChild(artifactsGroup);
+    
+    group.addChild(numbersGridToSprite(game, dynamicMap.numbersGrid));
     
     return group;
 }
 
+function numberToSprite(game, number, i, j) {
+    Phaser.Text(game, 16, 16, 'score: 0',  { fontSize: '32px', fill: '#000' });
+}
 
+function numbersGridToSprite(game, numbersGrid) {
+    var group = new Phaser.Group(game);
+    for (var i = 0; i < numbersGrid.size; i++) {
+        for (var j = 0; j < numbersGrid.size; j++) {
+            var tileNumber = numbersGrid.tile(i, j);
+            var text = new Phaser.Text(game, i * 32, j * 32, tileNumber.toString(), { fontSize: '32px', fill: '#000' });
+            group.addChild(text);
+        }
+    }
+    return group;
+}
 
 function playerToSprite(game, player, x, y) {
-    var player = game.add.sprite(x, y, 'dude');
+    var playerSprite = game.add.sprite(x, y, 'dude');
     
-    player.anchor.setTo(0.5, 0.5);
+    playerSprite.anchor.setTo(0.5, 0.5);
     
-    player.animations.add('moveDown', [0,1,2], 8, true);
-    player.animations.add('moveLeft', [12,13,14], 8, true);
-    player.animations.add('moveRight', [24,25,26], 8, true);
-    player.animations.add('moveUp', [36, 37, 38], 8, true);
-    player.animations.add('stop', [3], 20, true);
+    playerSprite.animations.add('moveDown', [0,1,2], 8, true);
+    playerSprite.animations.add('moveLeft', [12,13,14], 8, true);
+    playerSprite.animations.add('moveRight', [24,25,26], 8, true);
+    playerSprite.animations.add('moveUp', [36, 37, 38], 8, true);
+    playerSprite.animations.add('stop', [3], 20, true);
 
-    return player;
+    return playerSprite;
 }
 
 

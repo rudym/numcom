@@ -132,7 +132,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         var rebuiltTerrain;
         
         function onGameStateInit(data) {
-           console.log("Recieved game state from socket server", data);
+            socket.removeListener("gameStateInit", onGameStateInit);
+            console.log("Recieved game state from socket server", data);
             
             var serverTerrain = data['terrain'];
             var serverDynamicMap = data['dynamicMap'];
@@ -147,9 +148,11 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             terrain.addChild(terrainSprites);
             
             console.log('Server dynamic map', serverDynamicMap);
-
+            serverDynamicMap.numbersGrid = dynamicModule.NumberGrid.buildFromData(serverDynamicMap.numbersGrid);
+            
             var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, doorAssets, serverDynamicMap);
             terrain.addChild(dynamicMapSprite);
+            
             
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
             var playerSprite = playerToSprite(game, myPlayer, myPlayer.tile.x * 32, myPlayer.tile.y * 32);
@@ -161,7 +164,10 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
 
             terrain.addChild(playerSprite);
             
-            socket.removeListener("gameStateInit", onGameStateInit);
+            
+            
+            
+            
         }
         
         // Socket connected
