@@ -32,7 +32,7 @@ define(function(require){ // require is unused
             var walkableTiles = dynamicMap.terrain.getAllWalkableTiles();
             var maxGemsToGenerate = Math.floor(walkableTiles.length * 0.2); //
             
-            var probability = 0.4; // probability of generating gem in this tile
+            var probability = 0.1; // probability of generating gem in this tile
             
             for (var i = 0; i < maxGemsToGenerate; i++) {
                 if (Math.random() <= probability) {
