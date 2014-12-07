@@ -3,7 +3,6 @@
 **************************************************/
 var requirejs = require('requirejs');
 var util = require("util"),					                // Utility resources (logging, object inspection, etc)
-	Player = require("./Player").Player,		            // Player class
 	level = requirejs('terrain'), // terrain module
 	playerModule = requirejs('player'),
 	artifactModule = requirejs('artifact'),
@@ -62,37 +61,46 @@ function onClientDisconnect() {
 	this.broadcast.emit("remove player", {id: this.id});
 }
 
+
+var generatedTerrain;
+var generatedDynamicMap;
+
 // New player has joined
 function onNewPlayer(data) {
-	// Create a new player
-	var newPlayer = new Player(data.x, data.y);
-	newPlayer.id = this.id;
+    
+	if (typeof Game === "undefined" && players.length >= 0) {
+		util.log('Generate level');
+		generatedTerrain = (new level.TileMapGenerator()).generateMap();
+		generatedDynamicMap = (new dynamic.DynamicMapGenerator()).generateDynamicMap(generatedTerrain);
+	}
+	
+	
+	var walkableTiles = generatedTerrain.getAllWalkableTiles();
+    var playerTile = walkableTiles[Math.floor(Math.random() * walkableTiles.length)];
+	
+	// Create a new player (ME)
+	var newPlayer = new playerModule.Player(this.id, playerTile);
+
+	socket.emit("gameStateInit", {
+        'terrain': generatedTerrain,
+        'dynamicMap': generatedDynamicMap,
+        'player': { id: newPlayer.id, tile: newPlayer.tile }});
 
 	// Broadcast new player to connected socket clients
-	this.broadcast.emit("new player", {id: newPlayer.id});
+	this.broadcast.emit("new player", {id: newPlayer.id, tile: newPlayer.tile});
 
 	// Send existing players to the new player
 	util.log('Broadcasting data about new player');
 	var i, existingPlayer;
 	for (i = 0; i < players.length; i++) {
 		existingPlayer = players[i];
-		this.emit("new player", {id: existingPlayer.id});
+		this.emit("new player", {id: existingPlayer.id, tile: existingPlayer.tile});
 	}
 
 	// Add new player to the players array
 	players.push(newPlayer);
 	
-	if (typeof Game === "undefined" && players.length >= 0) {
-		util.log('Generate level');
-		var generatedTerrain = (new level.TileMapGenerator()).generateMap();
-		var generatedDynamicMap = (new dynamic.DynamicMapGenerator()).generateDynamicMap(generatedTerrain);
 
-		socket.emit("gameStateInit", {
-            'terrain': generatedTerrain,
-            'dynamicMap': generatedDynamicMap
-        });
-		//Game = mapgenerator.generateMap();
-	}
 }
 
 // Player has clicked

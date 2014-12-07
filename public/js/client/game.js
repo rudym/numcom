@@ -1,9 +1,9 @@
 
-requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
+requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModule, playerModule) {
     //window.onload = function() {
         RemotePlayer = function (index, game, player, startX, startY) {
         
-            var x = startX;
+        //     var x = startX;
             var y = startY;
         
             this.game = game;
@@ -73,6 +73,11 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
         var currentSpeed = 0;
         var cursors;
         
+        function PlayerWrapper (player, sprite) {
+            this.player = player;
+            this.sprite = sprite;
+        }
+        
         
         function create () {
         
@@ -84,38 +89,12 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
             gui.create();
             terrain = game.add.group();
             
-            //generator = new terrainModule.TileMapGenerator();
-            //var terrainSprites = terrainToSprites(game, landscapeAssets, generator.generateMap());
-            //terrain.addChild(terrainSprites);
-            
-        
-            //  Resize our game world to be a 2000 x 2000 square
-            //game.world.setBounds(-500, -500, 1000, 1000);
-        
-            //  Our tiled scrolling background
-            //land = game.add.tileSprite(0, 0, 800, 600, 'earth');
-            //land.fixedToCamera = true;
-        
             //  The base of our player
             var startX = 100,
                 startY = 100;
-            player = game.add.sprite(startX, startY, 'dude');
-            player.anchor.setTo(0.5, 0.5);
-            player.animations.add('moveDown', [0,1,2], 8, true);
-            player.animations.add('moveLeft', [12,13,14], 8, true);
-            player.animations.add('moveRight', [24,25,26], 8, true);
-            player.animations.add('moveUp', [36, 37, 38], 8, true);
-            player.animations.add('stop', [3], 20, true);
-        
-            //  This will force it to decelerate and limit its speed
-            //player.body.drag.setTo(200, 200);
-            //player.body.maxVelocity.setTo(400, 400);
-            //player.body.collideWorldBounds = true;
-        
+                
             //  Create some baddies to waste :)
             enemies = [];
-        
-            player.bringToTop();
             
             //  Modify the world and camera bounds
             game.world.setBounds(0, 0, 1920, 1200);
@@ -155,6 +134,7 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
             
             var serverTerrain = data['terrain'];
             var serverDynamicMap = data['dynamicMap'];
+            var serverPlayer = data['player'];
             
             var rebuiltTerrain = new terrainModule.Terrain(serverTerrain.size);
             for (var i = 0; i < serverTerrain.tiles.length; i++) {
@@ -169,7 +149,14 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
             var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, doorAssets, serverDynamicMap);
             terrain.addChild(dynamicMapSprite);
             
+            var playerSprite = playerToSprite(game, player, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
             
+            player = {
+                'obj': new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y)),
+                'sprite': playerSprite
+            };
+
+            terrain.addChild(playerSprite);
         }
         
         // Socket connected
@@ -177,7 +164,7 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
             console.log("Connected to socket server");
         
             // Send local player data to the game server
-            socket.emit("new player", {x: player.x, y:player.y});
+            socket.emit("new player");
         }
         
         // Socket disconnected
@@ -186,9 +173,19 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
         }
         
         // New player
-        function onNewPlayer(data) {
-            console.log("New player connected: "+data.id);
+        function onNewPlayer(serverPlayer) {
+            console.log("New player connected: "+ serverPlayer.id);
         
+            var myPlayer = new playerModule.Player(serverPlayer.id, serverPlayer.tile);
+            var sprite = playerToSprite(game, myPlayer, myPlayer.tile.x * 32, myPlayer.tile.y * 32);
+
+            enemies.push({
+                'player': myPlayer,
+                'sprite': sprite
+            });
+            
+            terrain.addChild(sprite);
+            
             // Add new player to the remote players array
             // enemies.push(new RemotePlayer(data.id, game, player, data.x, data.y));
         }
@@ -244,22 +241,22 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
             if (cursors.left.isDown)
             {
                 //player.angle -= 4;
-                player.animations.play('moveLeft');
+                player.sprite.animations.play('moveLeft');
             }
             else if (cursors.right.isDown)
             {
                 //player.angle += 4;
-                player.animations.play('moveRight');
+                player.sprite.animations.play('moveRight');
             }
             else if (cursors.up.isDown)
             {
                 //player.angle += 4;
-                player.animations.play('moveUp');
+                player.sprite.animations.play('moveUp');
             }
             else if (cursors.down.isDown)
             {
                 //player.angle += 4;
-                player.animations.play('moveDown');
+                player.sprite.animations.play('moveDown');
             }
             /*
         

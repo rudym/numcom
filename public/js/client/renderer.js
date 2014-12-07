@@ -18,6 +18,23 @@ function dynamicMapToSprites (game, gemsAssets, doorAsset, dynamicMap) {
     return group;
 }
 
+
+
+function playerToSprite(game, player, x, y) {
+    var player = game.add.sprite(x, y, 'dude');
+    
+    player.anchor.setTo(0.5, 0.5);
+    
+    player.animations.add('moveDown', [0,1,2], 8, true);
+    player.animations.add('moveLeft', [12,13,14], 8, true);
+    player.animations.add('moveRight', [24,25,26], 8, true);
+    player.animations.add('moveUp', [36, 37, 38], 8, true);
+    player.animations.add('stop', [3], 20, true);
+
+    return player;
+}
+
+
  function terrainToSprites (game, tilesAssets, terrain) {
     var group = new Phaser.Group(game);
     for (var i = 0; i < terrain.size; i++) {

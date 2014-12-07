@@ -10,7 +10,7 @@ define(function(require){ // require is unused
 /**************************************************
 ** GAME PLAYER CLASS
 **************************************************/
-    function Player(tile) {
+    function Player(id, tile) {
         this.id = undefined;
         this.tile = tile;
         this.score = 0;
