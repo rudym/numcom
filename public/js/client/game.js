@@ -1,5 +1,5 @@
 
-requirejs(['terrain'], function(terrainModule) {
+requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
     //window.onload = function() {
         RemotePlayer = function (index, game, player, startX, startY) {
         
@@ -42,11 +42,21 @@ requirejs(['terrain'], function(terrainModule) {
         var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
         var gui = new GameUI(game);
         var terrain;
-        var landscapeAssets = new TilesAssets(game);
+        
+        var landscapeAssets;
+        var gemsAssets;
         
         function preload () {
             game.load.spritesheet('dude', 'assets/charset.png', 32, 32);
+
+            landscapeAssets = new TilesAssets(game);
+            gemsAssets = new GemsAssets(game);
+            
+            game.load.spritesheet('dude', 'assets/dude.png', 64, 64);
+            
+            gemsAssets.preload();
             landscapeAssets.preload();
+            
             gui.preload();
         }
         
@@ -147,6 +157,18 @@ requirejs(['terrain'], function(terrainModule) {
             
             var terrainSprites = terrainToSprites(game, landscapeAssets, rebuiltTerrain);
             terrain.addChild(terrainSprites);
+            
+            var dynamicMapGen = new dynamicModule.DynamicMapGenerator(); // TODO: it should be on the server-side!!!!
+            dynamicMap = dynamicMapGen.generateDynamicMap(rebuiltTerrain);
+            
+            console.log(dynamicMap);
+            
+            
+            var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, dynamicMap);
+            
+            terrain.addChild(dynamicMapSprite);
+            
+            
         }
         
         // Socket connected

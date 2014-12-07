@@ -16,6 +16,32 @@ function TilesAssets (game, prefix) {
     }
 }
 
+function GemsAssets(game) {
+    this.GEM_TYPES = {
+        red: 0, 
+        yellow: 1,
+        green: 2,
+        magenta: 3,
+        blue: 4
+    }
+    
+    this.size = 32;
+    this.key = 'gems';
+    this.url = '/assets/gems.png';
+    
+    this.preload = function () {
+        game.load.spritesheet(this.key, this.url, this.size, this.size);
+    }
+    
+    this.generateGem = function (type, x, y) {
+        var s = new Phaser.Sprite(game, x, y, this.key, this.GEM_TYPES[type]);
+            s.anchor.setTo(0, 0);
+            
+        return s;
+    }
+}
+
+
 function TileSheetFactory(game, key, path, cols, rows, size) {
     this.size = size || 32;
     this.cols = cols;
