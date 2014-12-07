@@ -7,9 +7,62 @@ if (typeof define !== 'function') {
 }
 
 define(function(require){ // require is unused
-    function Player() { // TODO: player Model
-        this.x = 0;
-        this.y = 0;
+    /**************************************************
+** GAME PLAYER CLASS
+**************************************************/
+    function Player(startX, startY) {
+        var x = startX,
+        	y = startY,
+        	score = 0,
+        	gems = [],
+        	id;
+        
+        // Getters and setters
+        var getX = function() {
+        	return x;
+        };
+        
+        var getY = function() {
+        	return y;
+        };
+        
+        var setX = function(newX) {
+        	x = newX;
+        };
+        
+        var setY = function(newY) {
+        	y = newY;
+        };
+        
+        var getScore = function() {
+        	return score;
+        };
+        
+        var addScore = function(newScore) {
+        	score += newScore;
+        };
+        
+        var getGems = function() {
+            return gems;    
+        }
+        
+        var addGem = function(gem) {
+            gems.push(gem);
+        }
+        
+        
+        // Define which variables and methods can be accessed
+        return {
+        	getX: getX,
+        	getY: getY,
+        	setX: setX,
+        	setY: setY,
+        	getScore: getScore,
+        	addScore: addScore,
+        	getGems: getGems,
+        	addGem: addGem,
+        	id: id
+        };
     }
     
     return {
