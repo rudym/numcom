@@ -53,8 +53,7 @@ requirejs(['terrain'], function(terrainModule) {
         }
         
         var socket;         // Socket connection
-        
-        //var land;
+        var pController;
         
         var player;
         
@@ -69,6 +68,7 @@ requirejs(['terrain'], function(terrainModule) {
             //socket = io.connect('http://martynovr.koding.io:3000');
             
             socket = io();
+            pController = new PlayerController(game, socket);
             
             gui.create();
             terrain = game.add.group();
@@ -203,6 +203,7 @@ requirejs(['terrain'], function(terrainModule) {
         
         function update () {
             gui.update();
+            pController.update();
             
             /*for (var i = 0; i < enemies.length; i++)
             {

@@ -20,4 +20,5 @@
 //= require client/assets
 //= require client/renderer
 //= require client/ui
+//= require client/playerController
 //= require client/game
