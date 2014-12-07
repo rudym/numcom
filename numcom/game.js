@@ -28,7 +28,7 @@ var setEventHandlers = function() {
 
 // New socket connection
 function onSocketConnection(client) {
-	util.log("New player has connected: "+client.id);
+	//util.log("New player has connected: "+client.id);
 
 	// Listen for client disconnected
 	client.on("disconnect", onClientDisconnect);
@@ -70,7 +70,7 @@ var generatedDynamicMap;
 // New player has joined
 function onNewPlayer(data) {
     
-    console.log('New player: ', this.id);
+    util.log('New player: ' + this.id);
     
 	if (typeof generatedTerrain === "undefined" && players.length >= 0) {
 		util.log('Generate level');
@@ -109,7 +109,7 @@ function onNewPlayer(data) {
 
 // Player has clicked
 function onPlayerClicked(data) {
-    util.log(data);
+    //util.log(data);
 	
 	this.broadcast.emit("gameState", "Here goes delta data with changed state");
 }
@@ -137,7 +137,7 @@ function onMovePlayer(data) {
 
 // Number command event
 function onNumCom(data) {
-    util.log(data);
+    util.log("Number commander event started: " + data);
     
     // Find player in array
 	var movePlayer = playerById(this.id);

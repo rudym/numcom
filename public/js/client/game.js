@@ -357,6 +357,9 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         // Find player by ID
         function playerById(id) {
+            if(player.obj.id === id)
+                return player;
+            
             var i;
             for (i = 0; i < enemies.length; i++) {
                 if (enemies[i].player.id == id)
