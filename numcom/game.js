@@ -79,7 +79,7 @@ function onNewPlayer(data) {
 	if (typeof Game === "undefined" && players.length >= 0) {
 		util.log('Generate level');
 		var mapgenerator = new level.TileMapGenerator();
-		socket.emit("gameState", mapgenerator.generateMap());
+		socket.emit("gameStateInit", mapgenerator.generateMap());
 		//Game = mapgenerator.generateMap();
 	}
 }

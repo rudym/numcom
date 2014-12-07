@@ -66,8 +66,9 @@ requirejs(['terrain'], function(terrainModule) {
         
         function create () {
         
-            socket = io.connect('http://martynovr.koding.io:3000');
+            //socket = io.connect('http://martynovr.koding.io:3000');
             
+            socket = io();
             
             gui.create();
             terrain = game.add.group();
@@ -129,10 +130,10 @@ requirejs(['terrain'], function(terrainModule) {
             socket.on("remove player", onRemovePlayer);
             
             // Game state message received
-            socket.on("gameState", onGameStateChange);
+            socket.on("gameStateInit", onGameStateInit);
         };
         
-        function onGameStateChange(data) {
+        function onGameStateInit(data) {
             console.log("Recieved game state from socket server");
             
             var terrainSprites = terrainToSprites(game, landscapeAssets, data);
