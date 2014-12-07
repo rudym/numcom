@@ -8,6 +8,7 @@ html
     title #{title} - Hackathon Starter
     != css('main')
     script(src='/socket.io/socket.io.js')
+    script(src='/static/shared/require.js' data-main='/static/shared/terrain.js')
     script.
         var socket = io.connect(window.location.href);
         socket.on('greet', function (data) {
