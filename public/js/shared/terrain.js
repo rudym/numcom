@@ -42,6 +42,17 @@ define(function(require){ // require is unused
             if (tile.y + 1 > size - 1) return undefined;
             return this.tile(tile.x, tile.y + 1);
         };
+        
+        this.getAllWalkableTiles = function () { //todo: use LoDash's filter or map function
+            var result = [];
+            for (var i = this.tiles.length - 1; i >= 0; i--) {
+                var tile = this.tiles[i];
+                if (tile.walkable) {
+                    result.push(tile);
+                }
+            }
+            return result;
+        };
     }
     
     
@@ -263,8 +274,8 @@ define(function(require){ // require is unused
                 addWheat(terrain, rx, ry, rx + s, ry + s);
             }
             
-            for (i = 0; i < 5; i++) {
-                for (j = 0; j < 5; j++) {
+            for (i = 0; i < size; i++) {
+                for (j = 0; j < size; j++) {
                     tile = terrain.tile(i, j);
                     tile.updateWalkable();
                 }

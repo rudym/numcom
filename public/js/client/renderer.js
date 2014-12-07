@@ -1,3 +1,21 @@
+function gemToSprite (game, gemsAssets, artifact, tile) {
+    if (artifact.artifactType != 'gems') { return undefined; } // work only with 'gems' artifactType 
+    return gemsAssets.generateGem(artifact.artifactOption, tile.x * 32, tile.y * 32)
+}
+
+function dynamicMapToSprites (game, gemsAssets, dynamicMap) {
+    var group = new Phaser.Group(game);
+    
+    for (var i = 0; i < dynamicMap.artifacts.length; i++) {
+        var artifact = dynamicMap.artifacts[i];
+        if (artifact.artifactType == 'gems') { // only gems are supported now TODO:
+            group.addChild(gemToSprite(game, gemsAssets, artifact, artifact.tile));
+        }
+    }
+    
+    return group;
+}
+
  function terrainToSprites (game, tilesAssets, terrain) {
     var group = new Phaser.Group(game);
     for (var i = 0; i < terrain.size; i++) {

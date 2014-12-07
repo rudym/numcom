@@ -10,7 +10,7 @@ function PlayerController(game, socket) {
     
     this.update = function () {
         //  click da mouse
-        console.log("Start pc");
+        // console.log("Start pc");
         if (game.input.mousePointer.isDown)
         {
             console.log("Mouse event");
@@ -18,7 +18,7 @@ function PlayerController(game, socket) {
         }
         else
         {
-            console.log("No Mouse event");
+            // console.log("No Mouse event");
         }
         
         //  For example this checks if the up or down keys are pressed and moves the camera accordingly.

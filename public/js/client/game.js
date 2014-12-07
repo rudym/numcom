@@ -1,5 +1,5 @@
 
-requirejs(['terrain'], function(terrainModule) {
+requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
     //window.onload = function() {
         RemotePlayer = function (index, game, player, startX, startY) {
         
@@ -42,11 +42,21 @@ requirejs(['terrain'], function(terrainModule) {
         var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update, render: render });
         var gui = new GameUI(game);
         var terrain;
-        var landscapeAssets = new TilesAssets(game);
+        
+        var landscapeAssets;
+        var gemsAssets;
         
         function preload () {
+            game.load.spritesheet('dude', 'assets/charset.png', 32, 32);
+
+            landscapeAssets = new TilesAssets(game);
+            gemsAssets = new GemsAssets(game);
+            
             game.load.spritesheet('dude', 'assets/dude.png', 64, 64);
+            
+            gemsAssets.preload();
             landscapeAssets.preload();
+            
             gui.preload();
         }
         
@@ -84,11 +94,14 @@ requirejs(['terrain'], function(terrainModule) {
             //land.fixedToCamera = true;
         
             //  The base of our player
-            var startX = Math.round(Math.random()*(1000)-500),
-                startY = Math.round(Math.random()*(1000)-500);
+            var startX = 100,
+                startY = 100;
             player = game.add.sprite(startX, startY, 'dude');
             player.anchor.setTo(0.5, 0.5);
-            player.animations.add('move', [0,1,2,3,4,5,6,7], 20, true);
+            player.animations.add('moveDown', [0,1,2], 8, true);
+            player.animations.add('moveLeft', [12,13,14], 8, true);
+            player.animations.add('moveRight', [24,25,26], 8, true);
+            player.animations.add('moveUp', [36, 37, 38], 8, true);
             player.animations.add('stop', [3], 20, true);
         
             //  This will force it to decelerate and limit its speed
@@ -135,15 +148,23 @@ requirejs(['terrain'], function(terrainModule) {
         };
         
         function onGameStateInit(data) {
-            console.log("Recieved game state from socket server");
+            console.log("Recieved game state from socket server", data);
             
-            var rebuiltTerrain = new terrainModule.Terrain(data.size);
-            for (var i = 0; i < data.tiles.length; i++) {
-                rebuiltTerrain.tiles[i].copyFrom(data.tiles[i]);
+            var serverTerrain = data['terrain'];
+            var serverDynamicMap = data['dynamicMap'];
+            
+            var rebuiltTerrain = new terrainModule.Terrain(serverTerrain.size);
+            for (var i = 0; i < serverTerrain.tiles.length; i++) {
+                rebuiltTerrain.tiles[i].copyFrom(serverTerrain.tiles[i]);
             }
             
             var terrainSprites = terrainToSprites(game, landscapeAssets, rebuiltTerrain);
             terrain.addChild(terrainSprites);
+            
+            console.log('Server dynamic map', serverDynamicMap);
+
+            var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, serverDynamicMap);
+            terrain.addChild(dynamicMapSprite);
         }
         
         // Socket connected
@@ -213,16 +234,29 @@ requirejs(['terrain'], function(terrainModule) {
                     enemies[i].update();
                     game.physics.collide(player, enemies[i].player);
                 }
-            }
+            }*/
         
             if (cursors.left.isDown)
             {
-                player.angle -= 4;
+                //player.angle -= 4;
+                player.animations.play('moveLeft');
             }
             else if (cursors.right.isDown)
             {
-                player.angle += 4;
+                //player.angle += 4;
+                player.animations.play('moveRight');
             }
+            else if (cursors.up.isDown)
+            {
+                //player.angle += 4;
+                player.animations.play('moveUp');
+            }
+            else if (cursors.down.isDown)
+            {
+                //player.angle += 4;
+                player.animations.play('moveDown');
+            }
+            /*
         
             if (cursors.up.isDown)
             {
