@@ -27,7 +27,7 @@ function numberToSprite(game, number, i, j) {
     Phaser.Text(game, 16, 16, 'score: 0',  { fontSize: '32px', fill: '#000' });
 }
 
-<<<<<<< HEAD
+
 function numbersGridToSprite(game, numbersGrid) {
     var group = new Phaser.Group(game);
     for (var i = 0; i < numbersGrid.size; i++) {
@@ -40,22 +40,18 @@ function numbersGridToSprite(game, numbersGrid) {
     return group;
 }
 
-function playerToSprite(game, player, x, y) {
-    var playerSprite = game.add.sprite(x, y, 'dude');
-=======
 function playerToSprite(game, x, y) {
-    var player = game.add.sprite(x, y, 'dude');
->>>>>>> 2430b58559cd80a6b80b9d0063b09fe002be9ece
-    
-    playerSprite.anchor.setTo(0.5, 0.5);
-    
-    playerSprite.animations.add('moveDown', [0,1,2], 8, true);
-    playerSprite.animations.add('moveLeft', [12,13,14], 8, true);
-    playerSprite.animations.add('moveRight', [24,25,26], 8, true);
-    playerSprite.animations.add('moveUp', [36, 37, 38], 8, true);
-    playerSprite.animations.add('stop', [3], 20, true);
+    var sprite = game.add.sprite(x, y, 'dude');
 
-    return playerSprite;
+    sprite.anchor.setTo(0.5, 0.5);
+    
+    sprite.animations.add('moveDown', [0,1,2], 8, true);
+    sprite.animations.add('moveLeft', [12,13,14], 8, true);
+    sprite.animations.add('moveRight', [24,25,26], 8, true);
+    sprite.animations.add('moveUp', [36, 37, 38], 8, true);
+    sprite.animations.add('stop', [3], 20, true);
+
+    return sprite;
 }
 
 
