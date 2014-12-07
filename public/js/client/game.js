@@ -45,17 +45,16 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
         
         var landscapeAssets;
         var gemsAssets;
-        var doorAssets;
         
         function preload () {
+            game.load.spritesheet('dude', 'assets/charset.png', 32, 32);
+
             landscapeAssets = new TilesAssets(game);
             gemsAssets = new GemsAssets(game);
-            doorAssets = new DoorAsset(game);
             
             game.load.spritesheet('dude', 'assets/dude.png', 64, 64);
             
             gemsAssets.preload();
-            doorAssets.preload();
             landscapeAssets.preload();
             
             gui.preload();
@@ -95,11 +94,14 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
             //land.fixedToCamera = true;
         
             //  The base of our player
-            var startX = Math.round(Math.random()*(1000)-500),
-                startY = Math.round(Math.random()*(1000)-500);
+            var startX = 100,
+                startY = 100;
             player = game.add.sprite(startX, startY, 'dude');
             player.anchor.setTo(0.5, 0.5);
-            player.animations.add('move', [0,1,2,3,4,5,6,7], 20, true);
+            player.animations.add('moveDown', [0,1,2], 8, true);
+            player.animations.add('moveLeft', [12,13,14], 8, true);
+            player.animations.add('moveRight', [24,25,26], 8, true);
+            player.animations.add('moveUp', [36, 37, 38], 8, true);
             player.animations.add('stop', [3], 20, true);
         
             //  This will force it to decelerate and limit its speed
@@ -146,7 +148,7 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
         };
         
         function onGameStateInit(data) {
-            console.log("Recieved game state from socket server", data);
+           console.log("Recieved game state from socket server", data);
             
             var serverTerrain = data['terrain'];
             var serverDynamicMap = data['dynamicMap'];
@@ -163,6 +165,8 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
 
             var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, doorAssets, serverDynamicMap);
             terrain.addChild(dynamicMapSprite);
+            
+            
         }
         
         // Socket connected
@@ -232,16 +236,29 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
                     enemies[i].update();
                     game.physics.collide(player, enemies[i].player);
                 }
-            }
+            }*/
         
             if (cursors.left.isDown)
             {
-                player.angle -= 4;
+                //player.angle -= 4;
+                player.animations.play('moveLeft');
             }
             else if (cursors.right.isDown)
             {
-                player.angle += 4;
+                //player.angle += 4;
+                player.animations.play('moveRight');
             }
+            else if (cursors.up.isDown)
+            {
+                //player.angle += 4;
+                player.animations.play('moveUp');
+            }
+            else if (cursors.down.isDown)
+            {
+                //player.angle += 4;
+                player.animations.play('moveDown');
+            }
+            /*
         
             if (cursors.up.isDown)
             {
