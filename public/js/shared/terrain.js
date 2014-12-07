@@ -8,7 +8,8 @@ if (typeof define !== 'function') {
 
 define(function(require){ // require is unused
     var Terrain = function (size) {
-        var tiles = [];
+        this.tiles = [];
+        var tiles = this.tiles;
         
         this.size = size;
         
