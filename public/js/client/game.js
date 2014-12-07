@@ -129,6 +129,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             socket.on("gameStateInit", onGameStateInit);
         };
         
+        var rebuiltTerrain;
+        
         function onGameStateInit(data) {
            console.log("Recieved game state from socket server", data);
             
@@ -136,7 +138,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             var serverDynamicMap = data['dynamicMap'];
             var serverPlayer = data['player'];
             
-            var rebuiltTerrain = new terrainModule.Terrain(serverTerrain.size);
+            rebuiltTerrain = new terrainModule.Terrain(serverTerrain.size);
             for (var i = 0; i < serverTerrain.tiles.length; i++) {
                 rebuiltTerrain.tiles[i].copyFrom(serverTerrain.tiles[i]);
             }
@@ -149,10 +151,11 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, doorAssets, serverDynamicMap);
             terrain.addChild(dynamicMapSprite);
             
-            var playerSprite = playerToSprite(game, player, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
+            var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
+            var playerSprite = playerToSprite(game, myPlayer, myPlayer.tile.x * 32, myPlayer.tile.y * 32);
             
             player = {
-                'obj': new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y)),
+                'obj': myPlayer,
                 'sprite': playerSprite
             };
 
@@ -176,8 +179,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         function onNewPlayer(serverPlayer) {
             console.log("New player connected: "+ serverPlayer.id);
         
-            var myPlayer = new playerModule.Player(serverPlayer.id, serverPlayer.tile);
-            var sprite = playerToSprite(game, myPlayer, myPlayer.tile.x * 32, myPlayer.tile.y * 32);
+            var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
+            var sprite = playerToSprite(game, myPlayer, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
 
             enemies.push({
                 'player': myPlayer,

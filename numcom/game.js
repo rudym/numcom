@@ -68,7 +68,9 @@ var generatedDynamicMap;
 // New player has joined
 function onNewPlayer(data) {
     
-	if (typeof Game === "undefined" && players.length >= 0) {
+    console.log('New player: ', this.id);
+    
+	if (typeof generatedTerrain === "undefined" && players.length >= 0) {
 		util.log('Generate level');
 		generatedTerrain = (new level.TileMapGenerator()).generateMap();
 		generatedDynamicMap = (new dynamic.DynamicMapGenerator()).generateDynamicMap(generatedTerrain);
@@ -84,17 +86,17 @@ function onNewPlayer(data) {
 	socket.emit("gameStateInit", {
         'terrain': generatedTerrain,
         'dynamicMap': generatedDynamicMap,
-        'player': { id: newPlayer.id, tile: newPlayer.tile }});
+        'player': { 'id': newPlayer.id, tile: newPlayer.tile }});
 
 	// Broadcast new player to connected socket clients
-	this.broadcast.emit("new player", {id: newPlayer.id, tile: newPlayer.tile});
+	this.broadcast.emit("new player", {'id': newPlayer.id, tile: newPlayer.tile});
 
 	// Send existing players to the new player
 	util.log('Broadcasting data about new player');
 	var i, existingPlayer;
 	for (i = 0; i < players.length; i++) {
 		existingPlayer = players[i];
-		this.emit("new player", {id: existingPlayer.id, tile: existingPlayer.tile});
+		this.emit("new player", {'id': existingPlayer.id, tile: existingPlayer.tile});
 	}
 
 	// Add new player to the players array
