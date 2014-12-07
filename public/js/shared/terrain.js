@@ -112,27 +112,59 @@ define(function(require){ // require is unused
     
 
     var TileMapGenerator = function () {
+        
+        function addLake (terrain, tx0, ty0, tx1, ty1) {
+            terrain.tile(tx0, ty0).terrainType = 'icegrass'; //topleft
+            terrain.tile(tx0, ty0).terrainSpriteIndices = [1,3];
+            for (var i = tx0 + 1; i < tx1; i++) { // top border
+                terrain.tile(i, ty0).terrainType = 'icegrass';
+                terrain.tile(i, ty0).terrainSpriteIndices = [2,3];
+            }
+            terrain.tile(tx1, ty0).terrainType = 'icegrass'; //topright
+            terrain.tile(tx1, ty0).terrainSpriteIndices = [3,3];
+            
+            
+            terrain.tile(tx0, ty1).terrainType = 'icegrass'; //bottomleft
+            terrain.tile(tx0, ty1).terrainSpriteIndices = [1,5];
+            for (var i = tx0 + 1; i < tx1; i++) { // bottom border
+                terrain.tile(i, ty1).terrainType = 'icegrass';
+                terrain.tile(i, ty1).terrainSpriteIndices = [2,3];
+            }
+            terrain.tile(tx1, ty1).terrainType = 'icegrass'; //bottomright
+            terrain.tile(tx1, ty1).terrainSpriteIndices = [3,5];
+            
+            
+            // the lake center
+            
+            for (var i = tx0 + 1; i < tx1 + 1; i++) {
+                for (var j = ty0 + 1; j < ty1; j++) {
+                    terrain.tile(i, j).terrainType = 'icegrass';
+                    terrain.tile(i, j).terrainSpriteIndices = [2, 4];
+                }
+            }
+            
+            //left and right borders
+            for (var i = ty0 + 1; i < ty1; i++) {
+                terrain.tile(tx0, i).terrainType = 'icegrass';
+                terrain.tile(tx0, i).terrainSpriteIndices = [1, 4];
+                terrain.tile(tx1, i).terrainType = 'icegrass';
+                terrain.tile(tx1, i).terrainSpriteIndices = [3, 4];
+            }
+            
+        }
+        
         this.generateMap = function (size) { //laguna
-            var terrain = new Terrain(5);
-            for (var i = 0; i < 5; i++) {
-                for (var j = 0; j < 5; j++) {
+        //  size is ignored now
+            var terrain = new Terrain(32);
+            for (var i = 0; i < 32; i++) {
+                for (var j = 0; j < 32; j++) {
                     var tile = terrain.tile(i, j);
                     tile.terrainType = 'icegrass';
                     tile.terrainSpriteIndices = [5, 1];
                 }
             }
             
-            terrain.tile(1,1).terrainSpriteIndices = [1, 3];
-            terrain.tile(2,1).terrainSpriteIndices = [2, 3];
-            terrain.tile(3,1).terrainSpriteIndices = [3, 3];
-            
-            terrain.tile(1,2).terrainSpriteIndices = [1, 4];
-            terrain.tile(2,2).terrainSpriteIndices = [2, 4];
-            terrain.tile(3,2).terrainSpriteIndices = [3, 4];
-            
-            terrain.tile(1,3).terrainSpriteIndices = [1, 5];
-            terrain.tile(2,3).terrainSpriteIndices = [2, 5];
-            terrain.tile(3,3).terrainSpriteIndices = [3, 5];
+            addLake(terrain, 10, 10, 20, 20);
             
             for (i = 0; i < 5; i++) {
                 for (j = 0; j < 5; j++) {

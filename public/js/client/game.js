@@ -163,7 +163,7 @@ requirejs(['terrain'], function(terrainModule) {
             console.log("New player connected: "+data.id);
         
             // Add new player to the remote players array
-            enemies.push(new RemotePlayer(data.id, game, player, data.x, data.y));
+            // enemies.push(new RemotePlayer(data.id, game, player, data.x, data.y));
         }
         
         // Move player
