@@ -84,8 +84,13 @@ function onNewPlayer(data) {
 	
 	if (typeof Game === "undefined" && players.length >= 0) {
 		util.log('Generate level');
-		var mapgenerator = new level.TileMapGenerator();
-		socket.emit("gameStateInit", mapgenerator.generateMap());
+		var generatedTerrain = (new level.TileMapGenerator()).generateMap();
+		var generatedDynamicMap = (new dynamic.DynamicMapGenerator()).generateDynamicMap(generatedTerrain);
+
+		socket.emit("gameStateInit", {
+            'terrain': generatedTerrain,
+            'dynamicMap': generatedDynamicMap
+        });
 		//Game = mapgenerator.generateMap();
 	}
 }

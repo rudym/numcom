@@ -143,27 +143,23 @@ requirejs(['terrain', 'dynamic'], function(terrainModule, dynamicModule) {
         };
         
         function onGameStateInit(data) {
-            console.log("Recieved game state from socket server");
+            console.log("Recieved game state from socket server", data);
             
-            var rebuiltTerrain = new terrainModule.Terrain(data.size);
-            for (var i = 0; i < data.tiles.length; i++) {
-                rebuiltTerrain.tiles[i].copyFrom(data.tiles[i]);
+            var serverTerrain = data['terrain'];
+            var serverDynamicMap = data['dynamicMap'];
+            
+            var rebuiltTerrain = new terrainModule.Terrain(serverTerrain.size);
+            for (var i = 0; i < serverTerrain.tiles.length; i++) {
+                rebuiltTerrain.tiles[i].copyFrom(serverTerrain.tiles[i]);
             }
             
             var terrainSprites = terrainToSprites(game, landscapeAssets, rebuiltTerrain);
             terrain.addChild(terrainSprites);
             
-            var dynamicMapGen = new dynamicModule.DynamicMapGenerator(); // TODO: it should be on the server-side!!!!
-            dynamicMap = dynamicMapGen.generateDynamicMap(rebuiltTerrain);
-            
-            console.log(dynamicMap);
-            
-            
-            var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, dynamicMap);
-            
+            console.log('Server dynamic map', serverDynamicMap);
+
+            var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, serverDynamicMap);
             terrain.addChild(dynamicMapSprite);
-            
-            
         }
         
         // Socket connected

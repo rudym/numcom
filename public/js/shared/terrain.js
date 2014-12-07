@@ -274,8 +274,8 @@ define(function(require){ // require is unused
                 addWheat(terrain, rx, ry, rx + s, ry + s);
             }
             
-            for (i = 0; i < 5; i++) {
-                for (j = 0; j < 5; j++) {
+            for (i = 0; i < size; i++) {
+                for (j = 0; j < size; j++) {
                     tile = terrain.tile(i, j);
                     tile.updateWalkable();
                 }
