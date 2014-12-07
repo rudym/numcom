@@ -4,7 +4,11 @@
 var requirejs = require('requirejs');
 var util = require("util"),					                // Utility resources (logging, object inspection, etc)
 	Player = require("./Player").Player,		            // Player class
-	level = requirejs('terrain');	// Game level class
+	level = requirejs('terrain'), // terrain module
+	playerModule = requirejs('player'),
+	artifactModule = requirejs('artifact'),
+	dynamic = requirejs('dynamic')
+	;	
 
 
 /**************************************************

@@ -273,28 +273,9 @@ define(function(require){ // require is unused
         };
     };
     
-    function Player() { // TODO: player Model
-        this.x = 0;
-        this.y = 0;
-    }
     
-    function Artifact(name, artifactType, scoreBonus) { // gem or door Model
-        this.x = 0;
-        this.y = 0;
-        
-        this.scoreBonus = scoreBonus || 0; // score bonus to give to player for grabbing the artifact
-        
-        this.name = name || 'red gem'; // to show 'user123 collected the red gem'
-        this.artifactType = artifactType || 'gems'; // used by renderer
-    }
     
-    function DynamicMap (terrain) { // container for dynamic objects
-        this.players = []; // players list
-        this.artifacts = [];
-        this.terrain = terrain;
-        
-        
-    }
+   
 
     // Define which variables and methods can be accessed
     return {
