@@ -1,8 +1,6 @@
 
 requirejs(['terrain'], function(terrainModule) {
     //window.onload = function() {
-    console.log("Test data!!!");
-
         RemotePlayer = function (index, game, player, startX, startY) {
         
             var x = startX;
@@ -102,10 +100,13 @@ requirejs(['terrain'], function(terrainModule) {
             enemies = [];
         
             player.bringToTop();
+            
+            //  Modify the world and camera bounds
+            game.world.setBounds(0, 0, 1920, 1200);
         
-            game.camera.follow(player);
-            game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
-            game.camera.focusOnXY(0, 0);
+            //game.camera.follow(player);
+            //game.camera.deadzone = new Phaser.Rectangle(150, 150, 500, 300);
+            //game.camera.focusOnXY(0, 0);
         
             cursors = game.input.keyboard.createCursorKeys();
         
@@ -264,7 +265,8 @@ requirejs(['terrain'], function(terrainModule) {
         }
         
         function render () {
-        
+            //debug purpose
+            game.debug.cameraInfo(game.camera, 32, 32);
         }
         
         // Find player by ID

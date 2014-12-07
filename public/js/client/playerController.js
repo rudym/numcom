@@ -26,5 +26,25 @@ function PlayerController(game, socket) {
         {
             socket.emit("player clicked", "Player has clicked up button");
         }
+        
+        
+        
+        //camera works
+        if (cursors.up.isDown)
+        {
+             game.camera.y -= 4;
+        }
+        else if (cursors.down.isDown)
+        {
+            game.camera.y += 4;
+        }
+        if (cursors.left.isDown)
+        {
+            game.camera.x -= 4;
+        }
+        else if (cursors.right.isDown)
+        {
+           game.camera.x += 4;
+        }
     };
 }
