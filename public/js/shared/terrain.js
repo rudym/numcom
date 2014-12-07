@@ -7,7 +7,8 @@ if (typeof define !== 'function') {
 }
 
 define(function(require){ // require is unused
-    var Terrain = function (size) {
+
+    function TileGrid (size, tileCls) {
         this.tiles = [];
         var tiles = this.tiles;
         
@@ -15,7 +16,9 @@ define(function(require){ // require is unused
         
         for (var row = 0; row < size; row++) {
             for (var col = 0; col < size; col++) {
-                tiles.push(new Tile(col, row));
+                var tile = {};
+                tileCls.call(tile, col, row);
+                tiles.push(t);
             }
         }
         
@@ -42,21 +45,11 @@ define(function(require){ // require is unused
             if (tile.y + 1 > size - 1) return undefined;
             return this.tile(tile.x, tile.y + 1);
         };
-        
-        this.getAllWalkableTiles = function () { //todo: use LoDash's filter or map function
-            var result = [];
-            for (var i = this.tiles.length - 1; i >= 0; i--) {
-                var tile = this.tiles[i];
-                if (tile.walkable) {
-                    result.push(tile);
-                }
-            }
-            return result;
-        };
     }
+
     
     
-    var Tile = function (
+    function Tile (
                     x, y, state, payload, 
                     terrainType, terrainSpriteIndices,
                     floraType, floraSpriteIndices
@@ -88,11 +81,16 @@ define(function(require){ // require is unused
         }
         
         this.updateWalkable = function () {
-            if (!this.floraType) {
-                if (indexOfXYIndex(this.terrainSpriteIndices[0], 
-                    this.terrainSpriteIndices[1], WALKABLE_TILES_INDICES) >= 0) {
-                    this.walkable = true;
-                }
+            var walkableGround = indexOfXYIndex(this.terrainSpriteIndices[0], 
+                    this.terrainSpriteIndices[1], WALKABLE_TILES_INDICES) >= 0;
+                    
+            var walkableFlora = true;
+            if (this.floraType) {
+                walkableFlora = indexOfXYIndex(this.floraSpriteIndices[0], 
+                    this.floraSpriteIndices[1], WALKABLE_TILES_INDICES) >= 0
+            }
+            if (walkableFlora && walkableGround) {
+                this.walkable = true;
             } else {
                 this.walkable = false;
             }
@@ -118,6 +116,24 @@ define(function(require){ // require is unused
             this.floraSpriteIndices = tileObj.floraSpriteIndices;
             
             this.updateWalkable();
+        };
+    }
+    
+    
+    function Terrain (size) {
+        TileGrid.call(this, size, Tile); // call to super
+        
+        console.log('test tile:', this.tile(1,1));
+        
+        this.getAllWalkableTiles = function () { //todo: use LoDash's filter or map function
+            var result = [];
+            for (var i = this.tiles.length - 1; i >= 0; i--) {
+                var tile = this.tiles[i];
+                if (tile.walkable) {
+                    result.push(tile);
+                }
+            }
+            return result;
         };
     }
     
@@ -210,7 +226,7 @@ define(function(require){ // require is unused
         
         this.generateMap = function (size) { //laguna
         //  size is ignored now
-            var size = 32;
+            size = size || 32;
             var terrain = new Terrain(size);
             for (var i = 0; i < size; i++) {
                 for (var j = 0; j < size; j++) {
@@ -290,9 +306,10 @@ define(function(require){ // require is unused
 
     // Define which variables and methods can be accessed
     return {
-        TileMapGenerator: TileMapGenerator,
+        TileGrid: TileGrid,
         Terrain: Terrain,
-        Tile: Tile
+        Tile: Tile,
+        TileMapGenerator: TileMapGenerator,
     };
 });
 
