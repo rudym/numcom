@@ -19,7 +19,6 @@ function dynamicMapToSprites (game, gemsAssets, doorAsset, dynamicMap) {
 }
 
 
-
 function playerToSprite(game, player, x, y) {
     var player = game.add.sprite(x, y, 'dude');
     
