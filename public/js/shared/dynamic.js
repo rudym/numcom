@@ -9,6 +9,30 @@ define(function(require){ // require is unused
         this.players = []; // players list
         this.artifacts = []; // gems and doors
         this.terrain = terrain;
+
+        this.newPlayerCallbacks = [];
+        this.newArtifactCallbacks = [];
+
+        this.spawnNewPlayer = function (player) { // callback on client-side should add sprites, on the server side can send events to clients
+           this.players.push(player);
+           if (this.newPlayerCallbacks.length > 0) {
+               for (var i = 0; i < this.newPlayerCallbacks.length; i++) {
+                   var callback = this.newPlayerCallbacks[i];
+                   callback(this, player);
+               }
+           }
+        };
+        
+        this.spawnNewArtifact = function (artifact) { // callback on client-side should add sprites, on the server side can send events to clients
+            this.artifacts.push(artifact);
+            if (this.newArtifactCallbacks.length > 0) {
+               for (var i = 0; i < this.newArtifactCallbacks.length; i++) {
+                   var callback = this.newArtifactCallbacks[i];
+                   callback(this, artifact);
+               }
+           }
+        };
+        
     }
     
     function DynamicMapGenerator (terrain) {
@@ -28,9 +52,8 @@ define(function(require){ // require is unused
             return gemNames[Math.floor(Math.random() * gemNames.length)];
         }
 
-        this.generateGems = function(dynamicMap) {
+        this.generateArtifacts = function(dynamicMap) {
             var walkableTiles = dynamicMap.terrain.getAllWalkableTiles();
-            console.log('walkableTiles: ', walkableTiles.length);
             var maxGemsToGenerate = Math.floor(walkableTiles.length * 0.2); //
             
             var probability = 0.2; // probability of generating gem in this tile
@@ -43,14 +66,19 @@ define(function(require){ // require is unused
                     var color = getRandomGemName();
                     var name = color + ' gem';
                     var artifact = new artifacts.Artifact(tile, name, 'gems', color, this.gemsAndScores[color]);
-                    dynamicMap.artifacts.push(artifact);
+                    dynamicMap.spawnNewArtifact(artifact);
                 }
             }
+            
+            var doorTile = walkableTiles[Math.floor(Math.random() * walkableTiles.length)];
+            
+            var door = new artifacts.Door(doorTile);
+            dynamicMap.spawnNewArtifact(door);
         };
         
         this.generateDynamicMap = function (terrain) {
             var dynamicMap = new DynamicMap(terrain);
-            this.generateGems(dynamicMap);
+            this.generateArtifacts(dynamicMap);
             return dynamicMap;
         }
     }

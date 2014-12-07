@@ -16,6 +16,23 @@ function TilesAssets (game, prefix) {
     }
 }
 
+function DoorAsset (game) {
+    this.key = 'door';
+    this.size = 32;
+    this.url = '/assets/door.png';
+    
+    this.preload = function () {
+        game.load.spritesheet(this.key, this.url, this.size, this.size);
+    }
+    
+    this.doorToSprite = function(artifact, x, y) {
+        if (artifact.artifactType != 'door') { return undefined; } // support only 'door' type artifactType
+        var s = new Phaser.Sprite(game, x, y, this.key);
+                s.anchor.setTo(0, 0);
+        return s;
+    }
+}
+
 function GemsAssets(game) {
     this.GEM_TYPES = {
         red: 0, 

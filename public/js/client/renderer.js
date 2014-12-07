@@ -1,15 +1,17 @@
-function gemToSprite (game, gemsAssets, artifact, tile) {
+function gemToSprite (game, gemsAssets, artifact) {
     if (artifact.artifactType != 'gems') { return undefined; } // work only with 'gems' artifactType 
-    return gemsAssets.generateGem(artifact.artifactOption, tile.x * 32, tile.y * 32)
+    return gemsAssets.generateGem(artifact.artifactOption, artifact.tile.x * 32, artifact.tile.y * 32)
 }
 
-function dynamicMapToSprites (game, gemsAssets, dynamicMap) {
+function dynamicMapToSprites (game, gemsAssets, doorAsset, dynamicMap) {
     var group = new Phaser.Group(game);
     
     for (var i = 0; i < dynamicMap.artifacts.length; i++) {
         var artifact = dynamicMap.artifacts[i];
         if (artifact.artifactType == 'gems') { // only gems are supported now TODO:
-            group.addChild(gemToSprite(game, gemsAssets, artifact, artifact.tile));
+            group.addChild(gemToSprite(game, gemsAssets, artifact));
+        } else if (artifact.artifactType == 'door') {
+            group.addChild(doorAsset.doorToSprite(artifact, artifact.tile.x * 32, artifact.tile.y * 32));
         }
     }
     

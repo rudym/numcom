@@ -19,7 +19,20 @@ define(function(require){ // require is unused
         this.artifactOption = artifactOption || 'red';
     }
     
+    function Door (tile) {
+        this.x = tile.x;
+        this.y = tile.y;
+        this.tile = tile;
+        
+        this.scoreBonus = 100000; // score bonus to give to player for grabbing the artifact
+        
+        this.name = 'The Door'; // to show 'user123 collected the red gem'
+        this.artifactType = 'door'; // used by renderer
+        this.artifactOption = '';
+    }
+    
     return {
-        'Artifact': Artifact
+        'Artifact': Artifact,
+        'Door': Door
     }
 });
