@@ -127,6 +127,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             // Game state message received
             socket.on("gameStateInit", onGameStateInit);
+            
+            socket.on("DEBUGTOCLIENTCONSOLE", function (data) { console.log(data)});
         };
         
         var rebuiltTerrain;
@@ -155,7 +157,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
-            var playerSprite = playerToSprite(game, myPlayer, myPlayer.tile.x * 32, myPlayer.tile.y * 32);
+            var playerSprite = playerToSprite(game, myPlayer.tile.x * 32, myPlayer.tile.y * 32);
             
             player = {
                 'obj': myPlayer,
@@ -188,7 +190,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             console.log("New player connected: ", serverPlayer.id);
         
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
-            var sprite = playerToSprite(game, myPlayer, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
+            var sprite = playerToSprite(game, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
 
             enemies.push({
                 'player': myPlayer,
@@ -212,9 +214,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
                 return;
             }
         
-            // Update player position
-            movePlayer.player.x = data.x;
-            movePlayer.player.y = data.y;
+            // Update player position by path array
+            MovePlayerByPath(movePlayer, data.arPath);
             
         }
         
@@ -236,6 +237,46 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         }
         
+        function tweenTo(sprite, tileTo) {
+            var spriteTween = game.add.tween(sprite);
+            spriteTween.loop(false);
+            spriteTween.repeatCounter = 0;
+            
+            spriteTween.to({x: tileTo.x * 32, y: tileTo.y * 32}, 1000 /*duration of the tween (in ms)*/, 
+            Phaser.Easing.Linear.None /*easing type*/, true /*autostart?*/, 100 /*delay*/, false /*yoyo?*/);
+            
+            spriteTween.repeat(0);
+            player.obj.tile.x = tileTo.x;
+            player.obj.tile.y = tileTo.y;
+        }
+        
+        // Update player position by path array
+        function MovePlayerByPath(player, arPath) {
+            var i;
+            for (i = 0; i < arPath.length; i++) {
+                if (arPath[i] == 1)
+                {
+                    player.sprite.animations.play('moveLeft');
+                    tweenTo(player.sprite, rebuiltTerrain.left(player.obj.tile));
+                }
+                else if (arPath[i] == 2)
+                {
+                    player.sprite.animations.play('moveRight');
+                    tweenTo(player.sprite, rebuiltTerrain.right(player.obj.tile));
+                }
+                else if (arPath[i] == 3)
+                {
+                    player.sprite.animations.play('moveUp');
+                    tweenTo(player.sprite, rebuiltTerrain.top(player.obj.tile));
+                }
+                else
+                {
+                    player.sprite.animations.play('moveDown');
+                    tweenTo(player.sprite, rebuiltTerrain.bottom(player.obj.tile));
+                }
+            }
+        }
+        
         function update () {
             gui.update();
             pController.update();
@@ -249,26 +290,32 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
                 }
             }*/
         
+        /*
             if (cursors.left.isDown)
             {
-                //player.angle -= 4;
                 player.sprite.animations.play('moveLeft');
+                tweenTo(player.sprite, rebuiltTerrain.left(player.obj.tile));
+                //player.obj.tile = rebuiltTerrain.left(player.obj.tile);
             }
             else if (cursors.right.isDown)
             {
                 //player.angle += 4;
                 player.sprite.animations.play('moveRight');
+                tweenTo(player.sprite, rebuiltTerrain.right(player.obj.tile));
             }
             else if (cursors.up.isDown)
             {
                 //player.angle += 4;
                 player.sprite.animations.play('moveUp');
+                tweenTo(player.sprite, rebuiltTerrain.top(player.obj.tile));
             }
             else if (cursors.down.isDown)
             {
                 //player.angle += 4;
                 player.sprite.animations.play('moveDown');
+                tweenTo(player.sprite, rebuiltTerrain.bottom(player.obj.tile));
             }
+            */
             /*
         
             if (cursors.up.isDown)
@@ -318,6 +365,9 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         // Find player by ID
         function playerById(id) {
+            if(player.obj.id === id)
+                return player;
+            
             var i;
             for (i = 0; i < enemies.length; i++) {
                 if (enemies[i].player.id == id)

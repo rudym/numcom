@@ -28,7 +28,7 @@ var setEventHandlers = function() {
 
 // New socket connection
 function onSocketConnection(client) {
-	util.log("New player has connected: "+client.id);
+	//util.log("New player has connected: "+client.id);
 
 	// Listen for client disconnected
 	client.on("disconnect", onClientDisconnect);
@@ -40,6 +40,8 @@ function onSocketConnection(client) {
 	client.on("move player", onMovePlayer);
 	
 	client.on("player clicked", onPlayerClicked);
+	
+	client.on("numcom", onNumCom);
 }
 
 // Socket client has disconnected
@@ -68,7 +70,7 @@ var generatedDynamicMap;
 // New player has joined
 function onNewPlayer(data) {
     
-    console.log('New player: ', this.id);
+    util.log('New player: ' + this.id);
     
 	if (typeof generatedTerrain === "undefined" && players.length >= 0) {
 		util.log('Generate level');
@@ -107,7 +109,7 @@ function onNewPlayer(data) {
 
 // Player has clicked
 function onPlayerClicked(data) {
-    util.log(data);
+    //util.log(data);
 	
 	this.broadcast.emit("gameState", "Here goes delta data with changed state");
 }
@@ -131,6 +133,26 @@ function onMovePlayer(data) {
 	// Broadcast updated position to connected socket clients
 	//this.broadcast.emit("gameState", tttGame.getGameState());
 	socket.emit("gameState", Game.getGameState());
+}
+
+// Number command event
+function onNumCom(data) {
+    util.log("Number commander event started: " + data);
+    
+    // Find player in array
+	var movePlayer = playerById(this.id);
+    
+	// Player not found
+	if (!movePlayer) {
+		util.log("Player not found: "+this.id);
+		return;
+	}
+	
+	var arrayPath = [1, 2, 3];
+	socket.emit("move player", {id: movePlayer.id, arPath: arrayPath});
+	
+	
+	socket.emit("DEBUGTOCLIENTCONSOLE", data);
 }
 
 

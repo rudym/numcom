@@ -27,6 +27,7 @@ function numberToSprite(game, number, i, j) {
     Phaser.Text(game, 16, 16, 'score: 0',  { fontSize: '32px', fill: '#000' });
 }
 
+<<<<<<< HEAD
 function numbersGridToSprite(game, numbersGrid) {
     var group = new Phaser.Group(game);
     for (var i = 0; i < numbersGrid.size; i++) {
@@ -41,6 +42,10 @@ function numbersGridToSprite(game, numbersGrid) {
 
 function playerToSprite(game, player, x, y) {
     var playerSprite = game.add.sprite(x, y, 'dude');
+=======
+function playerToSprite(game, x, y) {
+    var player = game.add.sprite(x, y, 'dude');
+>>>>>>> 2430b58559cd80a6b80b9d0063b09fe002be9ece
     
     playerSprite.anchor.setTo(0.5, 0.5);
     
