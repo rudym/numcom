@@ -179,7 +179,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         // New player
         function onNewPlayer(serverPlayer) {
-            console.log("New player connected: "+ serverPlayer.id);
+            console.log("New player connected: ", serverPlayer.id);
         
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
             var sprite = playerToSprite(game, myPlayer, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
@@ -223,7 +223,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
                 return;
             }
         
-            removePlayer.player.kill();
+            terrain.removeChild(removePlayer.sprite);
         
             // Remove player from array
             enemies.splice(enemies.indexOf(removePlayer), 1);
@@ -314,7 +314,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         function playerById(id) {
             var i;
             for (i = 0; i < enemies.length; i++) {
-                if (enemies[i].player.name == id)
+                if (enemies[i].player.id == id)
                     return enemies[i];
             }
             
