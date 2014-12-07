@@ -35,6 +35,8 @@ function onSocketConnection(client) {
 
 	// Listen for move player message
 	client.on("move player", onMovePlayer);
+	
+	client.on("player clicked", onPlayerClicked);
 }
 
 // Socket client has disconnected
@@ -82,6 +84,13 @@ function onNewPlayer(data) {
 		socket.emit("gameStateInit", mapgenerator.generateMap());
 		//Game = mapgenerator.generateMap();
 	}
+}
+
+// Player has clicked
+function onPlayerClicked(data) {
+    util.log(data);
+	
+	this.broadcast.emit("gameState", "Here goes delta data with changed state");
 }
 
 // Player has moved
