@@ -113,6 +113,53 @@ define(function(require){ // require is unused
 
     var TileMapGenerator = function () {
         
+        function addWheat (terrain, tx0, ty0, tx1, ty1) {
+            
+            //terrain under wheat is walkable one common ground
+            for (var i = tx0; i <= tx1; i++) {
+                for (var j = ty0; j <= ty1; j++) {
+                    terrain.tile(i, j).terrainType = 'icegrass'; //topleft
+                    terrain.tile(i, j).terrainSpriteIndices = [5, 1];
+                }
+            }
+            
+            
+            terrain.tile(tx0, ty0).floraType = 'wheat'; //topleft
+            terrain.tile(tx0, ty0).floraSpriteIndices = [1,3];
+            for (var i = tx0 + 1; i < tx1; i++) { // top border
+                terrain.tile(i, ty0).floraType = 'wheat';
+                terrain.tile(i, ty0).floraSpriteIndices = [2,3];
+            }
+            terrain.tile(tx1, ty0).floraType = 'wheat'; //topright
+            terrain.tile(tx1, ty0).floraSpriteIndices = [3,3];
+            
+            
+            terrain.tile(tx0, ty1).floraType = 'wheat'; //bottomleft
+            terrain.tile(tx0, ty1).floraSpriteIndices = [1,5];
+            for (var i = tx0 + 1; i < tx1; i++) { // bottom border
+                terrain.tile(i, ty1).floraType = 'wheat';
+                terrain.tile(i, ty1).floraSpriteIndices = [2,5];
+            }
+            terrain.tile(tx1, ty1).floraType = 'wheat'; //bottomright
+            terrain.tile(tx1, ty1).floraSpriteIndices = [3,5];
+        
+            // the wheat center
+            for (var i = tx0 + 1; i < tx1 + 1; i++) {
+                for (var j = ty0 + 1; j < ty1; j++) {
+                    terrain.tile(i, j).floraType = 'wheat';
+                    terrain.tile(i, j).floraSpriteIndices = [2, 4];
+                }
+            }
+            
+            //left and right borders
+            for (var i = ty0 + 1; i < ty1; i++) {
+                terrain.tile(tx0, i).floraType = 'wheat';
+                terrain.tile(tx0, i).floraSpriteIndices = [1, 4];
+                terrain.tile(tx1, i).floraType = 'wheat';
+                terrain.tile(tx1, i).floraSpriteIndices = [3, 4];
+            }
+        }
+        
         function addLake (terrain, tx0, ty0, tx1, ty1) {
             terrain.tile(tx0, ty0).terrainType = 'icegrass'; //topleft
             terrain.tile(tx0, ty0).terrainSpriteIndices = [1,3];
@@ -128,14 +175,12 @@ define(function(require){ // require is unused
             terrain.tile(tx0, ty1).terrainSpriteIndices = [1,5];
             for (var i = tx0 + 1; i < tx1; i++) { // bottom border
                 terrain.tile(i, ty1).terrainType = 'icegrass';
-                terrain.tile(i, ty1).terrainSpriteIndices = [2,3];
+                terrain.tile(i, ty1).terrainSpriteIndices = [2,5];
             }
             terrain.tile(tx1, ty1).terrainType = 'icegrass'; //bottomright
             terrain.tile(tx1, ty1).terrainSpriteIndices = [3,5];
-            
-            
+        
             // the lake center
-            
             for (var i = tx0 + 1; i < tx1 + 1; i++) {
                 for (var j = ty0 + 1; j < ty1; j++) {
                     terrain.tile(i, j).terrainType = 'icegrass';
@@ -150,21 +195,77 @@ define(function(require){ // require is unused
                 terrain.tile(tx1, i).terrainType = 'icegrass';
                 terrain.tile(tx1, i).terrainSpriteIndices = [3, 4];
             }
-            
         }
         
         this.generateMap = function (size) { //laguna
         //  size is ignored now
-            var terrain = new Terrain(32);
-            for (var i = 0; i < 32; i++) {
-                for (var j = 0; j < 32; j++) {
+            var size = 32;
+            var terrain = new Terrain(size);
+            for (var i = 0; i < size; i++) {
+                for (var j = 0; j < size; j++) {
                     var tile = terrain.tile(i, j);
                     tile.terrainType = 'icegrass';
                     tile.terrainSpriteIndices = [5, 1];
                 }
             }
             
-            addLake(terrain, 10, 10, 20, 20);
+            var lakes = [];
+            
+            function intersect(rects, rect) {
+                for (var i = 0; i < rects.length; i++) {
+                    var rectToTest = rects[i];
+                    
+                    var X1W1 = rect[2];
+                    var X2W2 = rectToTest[2];
+                    var X1 = rect[0];
+                    var X2 = rectToTest[0];
+                    var Y1H1 = rect[3];
+                    var Y2H2 = rectToTest[3];
+                    var Y1 = rect[1];
+                    var Y2 = rectToTest[1];
+                    
+                    if (!(X1W1<X2 || X2W2<X1 || Y1H1<Y2 || Y2H2<Y1)) {
+                        return true;
+                    }
+                }
+            }
+            
+            for (var i = 0; i <= 4; i++) {
+                var rx = Math.floor(Math.random() * (size - 8));
+                var ry = Math.floor(Math.random() * (size - 8));
+                var s = Math.floor(Math.random() * 5 + 3);
+                
+                var rect = [rx, ry, rx + s, ry + s];
+                
+                if (intersect(lakes, rect)) {
+                    continue;
+                }
+                
+                lakes.push(rect);
+                
+                addLake(terrain, rx, ry, rx + s, ry + s);
+            }
+            
+            var wheats = [];
+            
+            for (var i = 0; i <= 4; i++) {
+                var rx = Math.floor(Math.random() * (size - 8));
+                var ry = Math.floor(Math.random() * (size - 8));
+                var s = Math.floor(Math.random() * 5 + 3);
+                var rect = [rx, ry, rx + s, ry + s];
+                
+                if (intersect(lakes, rect) || intersect(wheats, rect)) {
+                    continue;
+                }
+                
+                wheats.push(rect);
+                
+                addWheat(terrain, rx, ry, rx + s, ry + s);
+            }
+            
+            
+            
+            
             
             for (i = 0; i < 5; i++) {
                 for (j = 0; j < 5; j++) {
