@@ -56,7 +56,7 @@ function playerToSprite(game, x, y) {
     sprite.animations.add('moveLeft', [12,13,14], 8, true);
     sprite.animations.add('moveRight', [24,25,26], 8, true);
     sprite.animations.add('moveUp', [36, 37, 38], 8, true);
-    sprite.animations.add('stop', [3], 20, true);
+    sprite.animations.add('stop', [1], 8, true);
 
     return sprite;
 }

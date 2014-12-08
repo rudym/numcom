@@ -248,13 +248,59 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             spriteTween.repeat(0);
             avatar.obj.tile = tileTo;
-            //player.obj.tile.x = tileTo.x;
-            //player.obj.tile.y = tileTo.y;
+        }
+        
+        function tweenByPath(avatar, pathArray) {
+            if(typeof pathArray === "undefined") {
+                console.log("Empty path");
+                return;
+            }
+            if(pathArray.length < 1) {
+                console.log("Path finished");
+                return;
+            }
+            
+            var tileTo = pathArray[0];
+            
+            if (avatar.obj.tile.x > tileTo.x) {
+                avatar.sprite.animations.play('moveLeft');
+            } 
+            else if (avatar.obj.tile.x < tileTo.x) {
+                avatar.sprite.animations.play('moveRight');
+            }
+            else if (avatar.obj.tile.y > tileTo.y) {
+                avatar.sprite.animations.play('moveUp');
+            }
+            else {
+                avatar.sprite.animations.play('moveDown');
+            }
+            
+            var spriteTween = game.add.tween(avatar.sprite);
+            spriteTween.loop(false);
+            spriteTween.repeatCounter = 0;
+            
+            spriteTween.to({x: tileTo.x * 32, y: tileTo.y * 32}, 1000 /*duration of the tween (in ms)*/, 
+            Phaser.Easing.Linear.None /*easing type*/, true /*autostart?*/, 100 /*delay*/, false /*yoyo?*/);
+            
+            spriteTween.repeat(0);
+            avatar.obj.tile = tileTo;
+            
+            spriteTween.onComplete.add(function() {
+                avatar.sprite.animations.play('stop');
+                pathArray.splice(0,1);
+                tweenByPath(avatar, pathArray);
+            }, this);
         }
         
         // Update player position by path array
         function MovePlayerByPath(avatar, arPath) {
-            console.log("Move player ", avatar.obj.id);
+            var pathArray = [];
+            pathArray.push(rebuiltTerrain.left(avatar.obj.tile));
+            pathArray.push(rebuiltTerrain.top(pathArray[0]));
+            pathArray.push(rebuiltTerrain.left(pathArray[1]));
+            tweenByPath(avatar, pathArray);
+            
+            /*console.log("Path tiles num ", arPath.length);
             var i;
             for (i = 0; i < arPath.length; i++) {
                 if (arPath[i] == 1)
@@ -277,7 +323,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
                     avatar.sprite.animations.play('moveDown');
                     tweenTo(avatar, rebuiltTerrain.bottom(avatar.obj.tile));
                 }
-            }
+            }*/
+            
         }
         
         function update () {
