@@ -236,7 +236,14 @@ define(function(require){ // require is unused
         
         this.generateMap = function (size) { //laguna
         //  size is ignored now
-            size = size || 32;
+            // size = size || 32;
+            size = size || 8;
+            
+            // var NUM_LAKES = 4;
+            var NUM_LAKES = 0;
+            // var NUM_WHEATS = 4;
+            var NUM_WHEATS = 0;
+            
             var terrain = new Terrain(size);
             for (var i = 0; i < size; i++) {
                 for (var j = 0; j < size; j++) {
@@ -267,7 +274,7 @@ define(function(require){ // require is unused
                 }
             }
             
-            for (var i = 0; i <= 4; i++) {
+            for (var i = 0; i <= NUM_LAKES; i++) {
                 var rx = Math.floor(Math.random() * (size - 8));
                 var ry = Math.floor(Math.random() * (size - 8));
                 var s = Math.floor(Math.random() * 5 + 3);
@@ -285,7 +292,7 @@ define(function(require){ // require is unused
             
             var wheats = [];
             
-            for (var i = 0; i <= 4; i++) {
+            for (var i = 0; i <= NUM_WHEATS; i++) {
                 var rx = Math.floor(Math.random() * (size - 8));
                 var ry = Math.floor(Math.random() * (size - 8));
                 var s = Math.floor(Math.random() * 5 + 3);

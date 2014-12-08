@@ -88,7 +88,7 @@ function onNewPlayer(data) {
 	socket.emit("gameStateInit", {
         'terrain': generatedTerrain,
         'dynamicMap': generatedDynamicMap,
-        'player': { 'id': newPlayer.id, tile: newPlayer.tile }});
+        'player': { 'id': newPlayer.id, tile: newPlayer.tile, name: 'num' + (players.length+1) }});
 
 	// Broadcast new player to connected socket clients
 	this.broadcast.emit("new player", {'id': newPlayer.id, tile: newPlayer.tile});
@@ -176,7 +176,7 @@ var TurnController;
         
         while (nextTiles.length > 0) {
             var tileToTest = nextTiles.pop();
-            if (!tileToTest || currentPath.indexOf(tileToTest) >= 0) {
+            if (!tileToTest || currentPath.indexOf(tileToTest) >= 0 || !tileToTest.walkable) {
                 continue;
             }
             var result = TurnController.walkUntilAchieveScore(tileToTest, scoreToAchieve, newWalkScore, newPath, newLimiter);
@@ -210,14 +210,55 @@ function onNumCom(data) {
 	var newPath = TurnController.walkUntilAchieveScore(playerCurrentTile, scoreToAchieve);
 	
 	if (!newPath) {
-	    newPath = [];
-	} else {
-	    playerToMove.tile = newPath[newPath.length - 1];
-	}
-	util.log(newPath);
+	    socket.emit("move player", {id: playerToMove.id, arPath: []});
+	    return;
+	} 
 	
-// 	var arrayPath = [1, 2, 3];
-	socket.emit("move player", {id: playerToMove.id, arPath: newPath});
+	playerToMove.tile = newPath[newPath.length - 1]; // update server state
+	
+	
+	
+	var collectedGems = [];
+	var achievedBonus = 0;
+	var gameEnded = false;
+	for (var i = 0; i < newPath.length; i++) {
+        var tile = newPath[i];
+        var artifact = generatedDynamicMap.hasArtifact(tile.x, tile.y);
+        if (artifact) {
+            if (artifact.artifactType == 'gems') {
+                collectedGems.push(artifact);
+                achievedBonus = achievedBonus + artifact.scoreBonus;
+            } else if (artifact.artifactType == 'door') {
+                gameEnded = true;
+            }
+        }
+	}
+	
+	util.log('gems');
+	util.log(collectedGems);
+	
+	util.log('bonus');
+	util.log(achievedBonus);
+	
+	var scoreTable = [];
+	
+    if (gameEnded) {
+        util.log('gameEnded');
+        for (var i = 0; i < players.length; i++) {
+            scoreTable.push({
+                'id': players[i].id,
+                'name': players[i].name,
+                'score': players[i].score
+            });
+            
+        }
+        
+        util.log(scoreTable);
+    }
+	
+	
+	socket.emit("move player", {id: playerToMove.id, arPath: newPath, 
+	    collectedGems: collectedGems, gameEnded: gameEnded, scoreTable: scoreTable});
 	
 	
 	socket.emit("DEBUGTOCLIENTCONSOLE", data);
