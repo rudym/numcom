@@ -2,10 +2,11 @@
 [![Koding Hackathon](https://raw.githubusercontent.com/koding/hackathon.submit/master/images/badge.png?raw=true "Koding Hackathon")](https://koding.com/Hackathon)
 
 ## Description
+Calculate sums, collect gems, gain high scores and get the might of numbers!
+Remember dates, constants, phone numbers and calculate faster!
 
-Number Commander is the online multiplayer game for kids which helps children to learn numbers addition and fast calculation. It's tile-based and very easy to start and only browser is needed to play it.
+Number Commander is the online multiplayer game for kids which helps children to learn numbers addition and fast calculation. It's tile-based and very easy to start and only browser is required to play it.
 
-Calculate sums of paths, type numbers, collect gems, gain high scores and get the might of numbers!
 
 ## About
 
