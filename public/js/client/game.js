@@ -167,6 +167,10 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
 
             terrain.addChild(playerSprite);
             
+            
+            
+            
+            
         }
         
         // Socket connected
@@ -188,9 +192,9 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
             var sprite = playerToSprite(game, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
-            
+
             enemies.push({
-                'obj': myPlayer,
+                'player': myPlayer,
                 'sprite': sprite
             });
             
@@ -234,12 +238,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         }
         
-        function tweenTo(avatar, tileTo) {
-            if(typeof tileTo === "undefined") {
-                console.log("Edge of map");
-                return;
-            }
-            var spriteTween = game.add.tween(avatar.sprite);
+        function tweenTo(sprite, tileTo) {
+            var spriteTween = game.add.tween(sprite);
             spriteTween.loop(false);
             spriteTween.repeatCounter = 0;
             
@@ -247,84 +247,35 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             Phaser.Easing.Linear.None /*easing type*/, true /*autostart?*/, 100 /*delay*/, false /*yoyo?*/);
             
             spriteTween.repeat(0);
-            avatar.obj.tile = tileTo;
-        }
-        
-        function tweenByPath(avatar, pathArray) {
-            if(typeof pathArray === "undefined") {
-                console.log("Empty path");
-                return;
-            }
-            if(pathArray.length < 1) {
-                console.log("Path finished");
-                return;
-            }
-            
-            var tileTo = pathArray[0];
-            
-            if (avatar.obj.tile.x > tileTo.x) {
-                avatar.sprite.animations.play('moveLeft');
-            } 
-            else if (avatar.obj.tile.x < tileTo.x) {
-                avatar.sprite.animations.play('moveRight');
-            }
-            else if (avatar.obj.tile.y > tileTo.y) {
-                avatar.sprite.animations.play('moveUp');
-            }
-            else {
-                avatar.sprite.animations.play('moveDown');
-            }
-            
-            var spriteTween = game.add.tween(avatar.sprite);
-            spriteTween.loop(false);
-            spriteTween.repeatCounter = 0;
-            
-            spriteTween.to({x: tileTo.x * 32, y: tileTo.y * 32}, 1000 /*duration of the tween (in ms)*/, 
-            Phaser.Easing.Linear.None /*easing type*/, true /*autostart?*/, 100 /*delay*/, false /*yoyo?*/);
-            
-            spriteTween.repeat(0);
-            avatar.obj.tile = tileTo;
-            
-            spriteTween.onComplete.add(function() {
-                avatar.sprite.animations.play('stop');
-                pathArray.splice(0,1);
-                tweenByPath(avatar, pathArray);
-            }, this);
+            player.obj.tile.x = tileTo.x;
+            player.obj.tile.y = tileTo.y;
         }
         
         // Update player position by path array
-        function MovePlayerByPath(avatar, arPath) {
-            /*var pathArray = [];
-            pathArray.push(rebuiltTerrain.left(avatar.obj.tile));
-            pathArray.push(rebuiltTerrain.top(pathArray[0]));
-            pathArray.push(rebuiltTerrain.left(pathArray[1]));*/
-            tweenByPath(avatar, arPath);
-            
-            /*console.log("Path tiles num ", arPath.length);
+        function MovePlayerByPath(player, arPath) {
             var i;
             for (i = 0; i < arPath.length; i++) {
-                if (arPath[i] == 1)
+                if (arPath[i][0] == 'left')
                 {
-                    avatar.sprite.animations.play('moveLeft');
-                    tweenTo(avatar, rebuiltTerrain.left(avatar.obj.tile));
+                    player.sprite.animations.play('moveLeft');
+                    tweenTo(player.sprite, rebuiltTerrain.left(player.obj.tile));
                 }
-                else if (arPath[i] == 2)
+                else if (arPath[i][0] == 'right')
                 {
-                    avatar.sprite.animations.play('moveRight');
-                    tweenTo(avatar, rebuiltTerrain.right(avatar.obj.tile));
+                    player.sprite.animations.play('moveRight');
+                    tweenTo(player.sprite, rebuiltTerrain.right(player.obj.tile));
                 }
-                else if (arPath[i] == 3)
+                else if (arPath[i][0] == 'up')
                 {
-                    avatar.sprite.animations.play('moveUp');
-                    tweenTo(avatar, rebuiltTerrain.top(avatar.obj.tile));
+                    player.sprite.animations.play('moveUp');
+                    tweenTo(player.sprite, rebuiltTerrain.top(player.obj.tile));
                 }
-                else
+                else if (arPath[i][0] == 'down')
                 {
-                    avatar.sprite.animations.play('moveDown');
-                    tweenTo(avatar, rebuiltTerrain.bottom(avatar.obj.tile));
+                    player.sprite.animations.play('moveDown');
+                    tweenTo(player.sprite, rebuiltTerrain.bottom(player.obj.tile));
                 }
-            }*/
-            
+            }
         }
         
         function update () {
@@ -420,7 +371,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             var i;
             for (i = 0; i < enemies.length; i++) {
-                if (enemies[i].obj.id === id)
+                if (enemies[i].player.id == id)
                     return enemies[i];
             }
             
