@@ -5,11 +5,17 @@
 
 Number Commander is the online multiplayer game for kids which helps children to learn numbers addition and fast calculation. It's tile-based and very easy to start and only browser is needed to play it.
 
-Type numbers, collect gems, gain high scores and get the power of numbers!
+Calculate sums of paths, type numbers, collect gems, gain high scores and get the might of numbers!
 
 ## About
 
-This game has been crafted during Koding.com hackaton in 48 hours by https://github.com/vladignatyev (https://twitter.com/v_ignatyev) and https://github.com/rudym (https://twitter.com/rmartynov). It uses HTML5 Phaser.io 2D Game Engine, Node.js and Socket.io for multiplayer.
+We think about Number Commander as about perfect case for the topic "HTML5 games that are educational and learning oriented".
+Now it is early alpha version allowing users to play game on one server-generated map.
+
+There aren't too much educational and online games. There are much fewer HTML5 games. We wanted to create something valuable for the mankind and young people, who will build the future of all the World. And we wanted to contribute to the OpenSource, especially Phaser.io framework, indie-gamedev and hackathon sub-cultures. We think and we hope that the indie game development movement helps many people start programming, learn informatics basics and grow engineering and scientifical skills, required by any occupation.
+
+This game has been crafted during Koding.com hackaton in 48 hours by https://github.com/vladignatyev (https://twitter.com/v_ignatyev) and https://github.com/rudym (https://twitter.com/rmartynov). It uses HTML5 Phaser.io 2D Game Engine, Node.js and Socket.io for multiplayer communication layer. Some of objects from domain area are shared between client-side and server-side using RequireJS framework. 
+
 
 ## How to run
 
