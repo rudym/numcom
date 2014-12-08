@@ -65,7 +65,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         }
         
         var socket;         // Socket connection
-        var pController;
+        var pController, guiGroup;
         
         var player;
         
@@ -86,10 +86,6 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             socket = io();
             
-            
-            guiGroup = game.add.group();
-            pController = new PlayerController(game, socket, guiGroup);
-            
             gui.create();
             terrain = game.add.group();
             
@@ -108,6 +104,9 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             //game.camera.focusOnXY(0, 0);
         
             cursors = game.input.keyboard.createCursorKeys();
+            
+            guiGroup = game.add.group();
+            pController = new PlayerController(game, socket, guiGroup);
         
             // Start listening for events
             setEventHandlers();
