@@ -49,12 +49,13 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         function preload () {
             game.load.spritesheet('dude', 'assets/charset.png', 32, 32);
+            game.load.spritesheet('tilerect', 'assets/rect.png', 32, 32);
 
             landscapeAssets = new TilesAssets(game);
             gemsAssets = new GemsAssets(game);
             doorAssets = new DoorAsset(game);
             
-            game.load.spritesheet('dude', 'assets/dude.png', 64, 64);
+            // game.load.spritesheet('dude', 'assets/dude.png', 64, 64);
             
             gemsAssets.preload();
             landscapeAssets.preload();

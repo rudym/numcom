@@ -59,13 +59,14 @@ define(function(require){ // require is unused
     }
     
     function NumberGrid (terrain) {
+        this.tiles = [];
         terrainModule.TileGrid.call(this, terrain.size, Number);
         
-        var tiles = this.tiles;
+        this.terrain = terrain;
         
-        function emptyCells() {
-            for (var i = 0; i < tiles.length; i++) {
-                tiles[i] = -1; // empty all cells
+        this.emptyCells = function() {
+            for (var i = 0; i < this.tiles.length; i++) {
+                this.tiles[i] = -1; // empty all cells
             }
         }
         
@@ -74,26 +75,22 @@ define(function(require){ // require is unused
         }
         
         this.spawnMissed = function() {
-            var spawned;
+            var spawned = [];
             
-            var walkableTiles = terrain.getAllWalkableTiles();
-            for (var i = 0; i < walkableTiles.length; i++) {
-                var terrainTile = walkableTiles[i];
-                var number = this.tile(terrainTile.x, terrainTile.y);
-                if (number < 0) {
+            for (var i = 0; i < this.tiles.length; i++) {
+                var terrainTile = this.terrain.tiles[i];
+                if (!terrainTile.walkable) continue;
+                if (this.tiles[i] < 0) {
                     var n = newNumber();
-                    this.setTile(terrainTile.x, terrainTile.y, n);
-                    if (typeof spawned === 'undefined') {
-                        spawned = [];
-                    }
-                    spawned.push(n);
+                    this.tiles[i] = n;
+                    spawned.push({tile: terrainTile, 'n': n});
                 }
             }
             
             return spawned;
         }
         
-        emptyCells();
+        this.emptyCells();
     }
     
     NumberGrid.buildFromData = function(plainObject) {
@@ -147,6 +144,7 @@ define(function(require){ // require is unused
             var dynamicMap = new DynamicMap(terrain);
             this.generateArtifacts(dynamicMap);
             dynamicMap.numbersGrid = new NumberGrid(dynamicMap.terrain);
+
             dynamicMap.numbersGrid.spawnMissed();
             return dynamicMap;
         }

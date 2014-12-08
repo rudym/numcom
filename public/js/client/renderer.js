@@ -23,18 +23,24 @@ function dynamicMapToSprites (game, gemsAssets, doorAsset, dynamicMap) {
     return group;
 }
 
-function numberToSprite(game, number, i, j) {
-    Phaser.Text(game, 16, 16, 'score: 0',  { fontSize: '32px', fill: '#000' });
-}
-
 
 function numbersGridToSprite(game, numbersGrid) {
     var group = new Phaser.Group(game);
+  
     for (var i = 0; i < numbersGrid.size; i++) {
         for (var j = 0; j < numbersGrid.size; j++) {
             var tileNumber = numbersGrid.tile(i, j);
-            var text = new Phaser.Text(game, i * 32, j * 32, tileNumber.toString(), { fontSize: '32px', fill: '#000' });
-            group.addChild(text);
+            if (tileNumber > 0) {
+                var rectSprite = new Phaser.Sprite(game, i * 32, j * 32, 'tilerect');
+                var text = new Phaser.Text(game, i * 32 + 4, j * 32 + 4, 
+                    tileNumber.toString());
+                    text.fontSize = 12;
+                    text.font = 'Arial';
+                    text.alpha = 0.4;
+                    text.addColor('#fefcfc', 0);
+                group.addChild(text);
+                group.addChild(rectSprite);
+            }
         }
     }
     return group;
