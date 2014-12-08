@@ -1,7 +1,21 @@
-function PlayerController(game, socket) {
+function PlayerController(game, socket, guiGroup) {
     var pc = this;
     var cursors = game.input.keyboard.createCursorKeys();
     var num = "";
+    
+    //game.input.onDown.addOnce(updateText, this);
+       
+    var text = game.add.text(game.world.centerX, game.world.centerY, "", {
+        font: "125px Arial",
+        fill: "#000000",
+        align: "center"
+    });
+    text.fixedToCamera = true;
+    text.cameraOffset.setTo(100, 250);
+
+    //text.anchor.setTo(game.camera.x, game.camera.y);
+    
+    guiGroup.add(text);
     
     this.preload = function () {
     };
@@ -51,6 +65,11 @@ function PlayerController(game, socket) {
 
     };
     
+    function updateText() {
+        text.setText(num);
+        text.z = 100;
+    }
+    
     
     function keyPress(char) {
         if( char.charCodeAt(0) >= 48 && char.charCodeAt(0) <= 57) { // NUMBERS
@@ -60,5 +79,6 @@ function PlayerController(game, socket) {
             socket.emit("numcom", num);
             num = "";
         }
+        updateText();
     }   
 }
