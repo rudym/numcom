@@ -135,8 +135,8 @@ function onMovePlayer(data) {
 	socket.emit("gameState", Game.getGameState());
 }
 
-
-var TurnController = {
+var TurnController;
+    TurnController = {
     walkUntilAchieveScore: function (fromTile, scoreToAchieve, currentWalkScore, currentPath, depthLimiter) {
         depthLimiter = depthLimiter || 1;
         
@@ -172,7 +172,7 @@ var TurnController = {
         
         while (nextTiles.length > 0) {
             var tileToTest = nextTiles.pop();
-            var result = walkUntilAchieveScore(tileToTest, scoreToAchieve, newWalkScore, newPath, newLimiter);
+            var result = TurnController.walkUntilAchieveScore(tileToTest, scoreToAchieve, newWalkScore, newPath, newLimiter);
             if (result) {
                 return result;
             }
@@ -204,12 +204,8 @@ function onNumCom(data) {
 	
 	util.log(newPath);
 	
-	
-	
-	
-	
-	var arrayPath = [1, 2, 3];
-	socket.emit("move player", {id: movePlayer.id, arPath: arrayPath});
+// 	var arrayPath = [1, 2, 3];
+	socket.emit("move player", {id: playerToMove.id, arPath: newPath});
 	
 	
 	socket.emit("DEBUGTOCLIENTCONSOLE", data);
