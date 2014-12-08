@@ -32,11 +32,12 @@ function numbersGridToSprite(game, numbersGrid) {
             var tileNumber = numbersGrid.tile(i, j);
             if (tileNumber > 0) {
                 var rectSprite = new Phaser.Sprite(game, i * 32, j * 32, 'tilerect');
+                rectSprite.alpha = 0.1;
                 var text = new Phaser.Text(game, i * 32 + 4, j * 32 + 4, 
                     tileNumber.toString());
                     text.fontSize = 12;
                     text.font = 'Arial';
-                    text.alpha = 0.4;
+                    text.alpha = 0.6;
                     text.addColor('#fefcfc', 0);
                 group.addChild(text);
                 group.addChild(rectSprite);
@@ -49,7 +50,7 @@ function numbersGridToSprite(game, numbersGrid) {
 function playerToSprite(game, x, y) {
     var sprite = game.add.sprite(x, y, 'dude');
 
-    sprite.anchor.setTo(0.5, 0.5);
+    sprite.anchor.setTo(0.0, 0.0);
     
     sprite.animations.add('moveDown', [0,1,2], 8, true);
     sprite.animations.add('moveLeft', [12,13,14], 8, true);
