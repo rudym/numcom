@@ -31,13 +31,15 @@ function numbersGridToSprite(game, numbersGrid) {
         for (var j = 0; j < numbersGrid.size; j++) {
             var tileNumber = numbersGrid.tile(i, j);
             if (tileNumber > 0) {
-                var text = new Phaser.Text(game, i * 32, j * 32, 
+                var rectSprite = new Phaser.Sprite(game, i * 32, j * 32, 'tilerect');
+                var text = new Phaser.Text(game, i * 32 + 4, j * 32 + 4, 
                     tileNumber.toString());
                     text.fontSize = 12;
                     text.font = 'Arial';
                     text.alpha = 0.4;
                     text.addColor('#fefcfc', 0);
                 group.addChild(text);
+                group.addChild(rectSprite);
             }
         }
     }
