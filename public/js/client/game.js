@@ -1,3 +1,38 @@
+var showScoreTable;
+window.onload = function () {
+    showScoreTable = function (scoreTable) {
+        var modalContent = '';
+        
+        for (var i = 0; i < scoreTable.length; i++) {
+            var score = scoreTable[i]['score'];
+            var name = scoreTable[i]['name'];
+            
+            modalContent = modalContent + '<h3>' + score + ' - <small>' + name + '</small></h3>';
+        }
+        
+        var html = '<div class="modal fade" id="scoreTable" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">' +
+          '<div class="modal-dialog">' +
+            '<div class="modal-content">' +
+              '<div class="modal-header">' +
+                '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
+                '<h4 class="modal-title" id="exampleModalLabel">Game Over!</h4>' +
+              '</div>' +
+              '<div class="modal-body">' +
+                modalContent + 
+              '</div>' +
+              '<div class="modal-footer">' +
+                '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+        
+        $(document.body).append($(html));
+        $('#scoreTable').modal();
+        
+    }
+
+}
 
 requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModule, playerModule) {
     //window.onload = function() {
@@ -46,6 +81,9 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         var landscapeAssets;
         var gemsAssets;
         var doorAssets;
+        
+        var artifactsObjs;
+        
         
         function preload () {
             game.load.spritesheet('dude', 'assets/charset.png', 32, 32);
@@ -136,6 +174,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         };
         
         var rebuiltTerrain;
+        var rebuiltServerDynamicMap;
+        var artifactsLayer;
         
         function onGameStateInit(data) {
             socket.removeListener("gameStateInit", onGameStateInit);
@@ -156,11 +196,20 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             console.log('Server dynamic map', serverDynamicMap);
             serverDynamicMap.numbersGrid = dynamicModule.NumberGrid.buildFromData(serverDynamicMap.numbersGrid);
             
-            var dynamicMapSprite = dynamicMapToSprites(game, gemsAssets, doorAssets, serverDynamicMap);
-            terrain.addChild(dynamicMapSprite);
+            rebuiltServerDynamicMap = serverDynamicMap;
+            var dynamicMapSpriteObjects = dynamicMapToSprites(game, gemsAssets, doorAssets, serverDynamicMap);
             
+            
+            artifactsObjs = dynamicMapSpriteObjects[1]['artifacts'];
+            artifactsLayer = game.add.group();
+            artifactsLayer.alpha = 0.5;
+            for (var i = 0; i < artifactsObjs.length; i++) {
+                var sprite = artifactsObjs[i]['sprite'];
+                artifactsLayer.addChild(sprite);
+            }
             
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
+            myPlayer.name = serverPlayer.name;
             var playerSprite = playerToSprite(game, myPlayer.tile.x * 32, myPlayer.tile.y * 32);
             
             player = {
@@ -171,7 +220,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             terrain.addChild(playerSprite);
             
             
-            
+            terrain.addChild(dynamicMapSpriteObjects[0]);
             
             
         }
@@ -194,10 +243,11 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             console.log("New player connected: ", serverPlayer.id);
         
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
+            myPlaer.name = serverPlayer.name;
             var sprite = playerToSprite(game, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
 
             enemies.push({
-                'player': myPlayer,
+                'obj': myPlayer,
                 'sprite': sprite
             });
             
@@ -219,7 +269,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             }
         
             // Update player position by path array
-            MovePlayerByPath(movePlayer, data.arPath);
+            MovePlayerByPath(movePlayer, data.arPath, data.achievedBonus, data.collectedGems, data.scoreTable);
             
         }
         
@@ -269,6 +319,8 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             var tileTo = pathArray[0];
             
+            // eat gems and update  or show end of level if occured
+            
             if (avatar.obj.tile.x > tileTo.x) {
                 avatar.sprite.animations.play('moveLeft');
             } 
@@ -299,11 +351,45 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             }, this);
         }
         
+        function updateScoreUI() {
+            gui.scoreText.setText('score:' + player['obj'].score);
+            
+        }
+        
+        
+        function getArtifactByTile(x, y) {
+            for (var i = 0; i < artifactsObjs.length; i++) {
+                var artifact = artifactsObjs[i]['obj'];
+                if (artifact.x == x && artifact.y == y) {
+                    return artifactsObjs[i];
+                }
+            }
+            return false;
+        }
+        
         // Update player position by path array
-        function MovePlayerByPath(avatar, arPath) {
+        function MovePlayerByPath(avatar, arPath, achievedBonus, collectedGems, scoreTable) {
           
             tweenByPath(avatar, arPath);
             
+            avatar.obj.score = avatar.obj.score + achievedBonus;
+            updateScoreUI();
+            
+            for (var i = 0; i < collectedGems.length; i++) {
+                var collectedGem = collectedGems[i];
+                var tileX = collectedGem.tile.x;
+                var tileY = collectedGem.tile.y;
+                
+                var artifact = getArtifactByTile(tileX, tileY);
+                if (artifact) {
+                    artifactsLayer.removeChild(artifact['sprite']);
+                }
+                //find and remove gem
+            }
+            
+            if (scoreTable && scoreTable.length) {
+                showScoreTable(scoreTable);
+            }
         }
         
         function update () {
@@ -399,7 +485,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             var i;
             for (i = 0; i < enemies.length; i++) {
-                if (enemies[i].player.id == id)
+                if (enemies[i].obj.id == id)
                     return enemies[i];
             }
             

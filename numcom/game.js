@@ -140,7 +140,7 @@ var TurnController;
     walkUntilAchieveScore: function (fromTile, scoreToAchieve, currentWalkScore, currentPath, depthLimiter) {
         depthLimiter = depthLimiter || 1;
         
-        if (depthLimiter > 5) {
+        if (depthLimiter > 7) {
             return false;
         }
         
@@ -210,7 +210,7 @@ function onNumCom(data) {
 	var newPath = TurnController.walkUntilAchieveScore(playerCurrentTile, scoreToAchieve);
 	
 	if (!newPath) {
-	    socket.emit("move player", {id: playerToMove.id, arPath: []});
+	    socket.emit("move player", {id: playerToMove.id, arPath: [], collectedGems: [], gameEnded: false, scoreTable: []});
 	    return;
 	} 
 	

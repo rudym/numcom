@@ -236,13 +236,13 @@ define(function(require){ // require is unused
         
         this.generateMap = function (size) { //laguna
         //  size is ignored now
-            // size = size || 32;
-            size = size || 8;
+            size = size || 32;
+            // size = size || 8;
             
-            // var NUM_LAKES = 4;
-            var NUM_LAKES = 0;
-            // var NUM_WHEATS = 4;
-            var NUM_WHEATS = 0;
+            var NUM_LAKES = 4;
+            // var NUM_LAKES = 0;
+            var NUM_WHEATS = 4;
+            // var NUM_WHEATS = 0;
             
             var terrain = new Terrain(size);
             for (var i = 0; i < size; i++) {

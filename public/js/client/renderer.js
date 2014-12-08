@@ -4,23 +4,32 @@ function gemToSprite (game, gemsAssets, artifact) {
 }
 
 function dynamicMapToSprites (game, gemsAssets, doorAsset, dynamicMap) {
+    var objects = {};
+    objects['artifacts'] = [];
+    
     var group = new Phaser.Group(game);
     
     var artifactsGroup = new Phaser.Group(game);
     
     for (var i = 0; i < dynamicMap.artifacts.length; i++) {
         var artifact = dynamicMap.artifacts[i];
+        var sprite;
         if (artifact.artifactType == 'gems') { // only gems are supported now TODO:
-            artifactsGroup.addChild(gemToSprite(game, gemsAssets, artifact));
+            sprite = gemToSprite(game, gemsAssets, artifact);
         } else if (artifact.artifactType == 'door') {
-            artifactsGroup.addChild(doorAsset.doorToSprite(artifact, artifact.tile.x * 32, artifact.tile.y * 32));
+            sprite = doorAsset.doorToSprite(artifact, artifact.tile.x * 32, artifact.tile.y * 32);
         }
+        // artifactsGroup.addChild(sprite);
+        objects['artifacts'].push({
+            'obj': artifact,
+            'sprite': sprite
+        })
     }
-    group.addChild(artifactsGroup);
+    // group.addChild(artifactsGroup);
     
     group.addChild(numbersGridToSprite(game, dynamicMap.numbersGrid));
     
-    return group;
+    return [group, objects];
 }
 
 
