@@ -9,25 +9,27 @@ if (typeof define !== 'function') {
 define(function(require){ // require is unused
 
     function TileGrid (size, tileCls) {
-        this.tiles = [];
-        var tiles = this.tiles;
+        if (typeof this.tiles === 'undefined') {
+            this.tiles = [];
+        } 
         
+
         this.size = size;
         
         for (var row = 0; row < size; row++) {
             for (var col = 0; col < size; col++) {
                 var tile = {};
                 tileCls.call(tile, col, row);
-                tiles.push(tile);
+                this.tiles.push(tile);
             }
         }
         
         this.tile = function (x, y) {
-            return tiles[x + y * size];
+            return this.tiles[x + y * size];
         };
         
         this.setTile = function (x, y, value) {
-            tiles[x + y * size] = value;
+            this.tiles[x + y * size] = value;
         };
         
         this.getSize = function () { 
