@@ -294,11 +294,11 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         // Update player position by path array
         function MovePlayerByPath(avatar, arPath) {
-            var pathArray = [];
+            /*var pathArray = [];
             pathArray.push(rebuiltTerrain.left(avatar.obj.tile));
             pathArray.push(rebuiltTerrain.top(pathArray[0]));
-            pathArray.push(rebuiltTerrain.left(pathArray[1]));
-            tweenByPath(avatar, pathArray);
+            pathArray.push(rebuiltTerrain.left(pathArray[1]));*/
+            tweenByPath(avatar, arPath);
             
             /*console.log("Path tiles num ", arPath.length);
             var i;
