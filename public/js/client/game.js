@@ -103,7 +103,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         }
         
         var socket;         // Socket connection
-        var pController, guiGroup;
+        var pController;
         
         var player;
         
@@ -124,6 +124,10 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             
             socket = io();
             
+            
+            guiGroup = game.add.group();
+            pController = new PlayerController(game, socket, guiGroup);
+            
             gui.create();
             terrain = game.add.group();
             
@@ -142,9 +146,6 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             //game.camera.focusOnXY(0, 0);
         
             cursors = game.input.keyboard.createCursorKeys();
-            
-            guiGroup = game.add.group();
-            pController = new PlayerController(game, socket, guiGroup);
         
             // Start listening for events
             setEventHandlers();
@@ -242,7 +243,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             console.log("New player connected: ", serverPlayer.id);
         
             var myPlayer = new playerModule.Player(serverPlayer.id, rebuiltTerrain.tile(serverPlayer.tile.x, serverPlayer.tile.y));
-            myPlaer.name = serverPlayer.name;
+            myPlayer.name = serverPlayer.name;
             var sprite = playerToSprite(game, serverPlayer.tile.x * 32, serverPlayer.tile.y * 32);
 
             enemies.push({
@@ -474,7 +475,7 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         function render () {
             //debug purpose
-            game.debug.cameraInfo(game.camera, 32, 32);
+            // game.debug.cameraInfo(game.camera, 32, 32);
         }
         
         // Find player by ID
