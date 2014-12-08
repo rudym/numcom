@@ -70,6 +70,12 @@ var generatedDynamicMap;
 // New player has joined
 function onNewPlayer(data) {
     
+    var newp = playerById(this.id);
+    if(newp){
+        util.log("player with that id is already registered");
+        return;
+    }
+    
     util.log('New player: ' + this.id);
     
 	if (typeof generatedTerrain === "undefined" && players.length >= 0) {
