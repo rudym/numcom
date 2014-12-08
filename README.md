@@ -9,7 +9,7 @@ Type numbers, collect gems, gain high scores and get the power of numbers!
 
 ## About
 
-This game has been crafted during Koding.com hackaton in 48 hours by https://twitter.com/v_ignatyev and https://twitter.com/rmartynov. It uses HTML5 Phaser.io 2D Game Engine, Node.js and Socket.io for multiplayer.
+This game has been crafted during Koding.com hackaton in 48 hours by https://github.com/vladignatyev (https://twitter.com/v_ignatyev) and https://github.com/rudym (https://twitter.com/rmartynov). It uses HTML5 Phaser.io 2D Game Engine, Node.js and Socket.io for multiplayer.
 
 ## How to run
 
