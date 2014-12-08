@@ -135,21 +135,77 @@ function onMovePlayer(data) {
 	socket.emit("gameState", Game.getGameState());
 }
 
+var TurnController;
+    TurnController = {
+    walkUntilAchieveScore: function (fromTile, scoreToAchieve, currentWalkScore, currentPath, depthLimiter) {
+        depthLimiter = depthLimiter || 1;
+        
+        if (depthLimiter > 5) {
+            return false;
+        }
+        
+        currentPath = currentPath || [];
+        currentWalkScore = currentWalkScore || 0;
+        
+        var newLimiter = depthLimiter + 1;
+        
+        var numberFromTile = generatedDynamicMap.numbersGrid.tile(fromTile.x, fromTile.y);
+        var newWalkScore = currentWalkScore + numberFromTile;
+        
+        if (newWalkScore > scoreToAchieve) {
+            return false;
+        }
+        
+        var newPath = currentPath.concat(); // copy path
+        newPath.push(fromTile);
+        
+        if (newWalkScore == scoreToAchieve) {
+            return newPath;
+        } 
+        
+        var nextTiles = [];
+        
+        nextTiles.push(generatedTerrain.left(generatedTerrain.tile(fromTile.x, fromTile.y)));
+        nextTiles.push(generatedTerrain.top(generatedTerrain.tile(fromTile.x, fromTile.y)));
+        nextTiles.push(generatedTerrain.right(generatedTerrain.tile(fromTile.x, fromTile.y)));
+        nextTiles.push(generatedTerrain.bottom(generatedTerrain.tile(fromTile.x, fromTile.y)));
+        
+        while (nextTiles.length > 0) {
+            var tileToTest = nextTiles.pop();
+            var result = TurnController.walkUntilAchieveScore(tileToTest, scoreToAchieve, newWalkScore, newPath, newLimiter);
+            if (result) {
+                return result;
+            }
+        }
+        
+        return false;
+    }
+};
+
+
 // Number command event
 function onNumCom(data) {
     util.log("Number commander event started: " + data);
     
+    var scoreToAchieve = parseInt(data.toString());
+    
     // Find player in array
-	var movePlayer = playerById(this.id);
+	var playerToMove = playerById(this.id);
     
 	// Player not found
-	if (!movePlayer) {
+	if (!playerToMove) {
 		util.log("Player not found: "+this.id);
 		return;
 	}
 	
-	var arrayPath = [1, 2, 3];
-	socket.emit("move player", {id: movePlayer.id, arPath: arrayPath});
+	var playerCurrentTile = playerToMove.tile;
+	
+	var newPath = TurnController.walkUntilAchieveScore(playerCurrentTile, scoreToAchieve, 0, [], 1);
+	
+	util.log(newPath);
+	
+// 	var arrayPath = [1, 2, 3];
+	socket.emit("move player", {id: playerToMove.id, arPath: newPath});
 	
 	
 	socket.emit("DEBUGTOCLIENTCONSOLE", data);
