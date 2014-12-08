@@ -135,42 +135,32 @@ function onMovePlayer(data) {
 	socket.emit("gameState", Game.getGameState());
 }
 
-var TurnController;
+var TurnController;    
     TurnController = {
-    walkUntilAchieveScore: function (fromTile, scoreToAchieve, direction, currentWalkScore, currentPath, depthLimiter) {
+    walkUntilAchieveScore: function (fromTile, scoreToAchieve, currentWalkScore, currentPath, depthLimiter) {
         depthLimiter = depthLimiter || 1;
         
         if (depthLimiter > 5) {
-            util.log('limited');
             return false;
         }
         
-        if (!fromTile || !fromTile.walkable) {
-            util.log('tiles not walkable');
-            return false;
-            
-        }
+        
         
         currentPath = currentPath || [];
         currentWalkScore = currentWalkScore || 0;
         
         var newLimiter = depthLimiter + 1;
-        var numberFromTile,
-            newWalkScore,
-            newPath;
-        
         if (depthLimiter > 1) {
-            numberFromTile = generatedDynamicMap.numbersGrid.tile(fromTile.x, fromTile.y);
-            newWalkScore = currentWalkScore + numberFromTile;
+            
+            var numberFromTile = generatedDynamicMap.numbersGrid.tile(fromTile.x, fromTile.y);
+            var newWalkScore = currentWalkScore + numberFromTile;
             
             if (newWalkScore > scoreToAchieve) {
-                util.log('walkscoreistobig');
                 return false;
             }
             
-            newPath = currentPath.concat(); // copy path
-            // newPath.push(fromTile);
-            if (direction) newPath.push([direction, fromTile]); // will skip currentTile
+            var newPath = currentPath.concat(); // copy path
+            newPath.push(fromTile);
             
             if (newWalkScore == scoreToAchieve) {
                 return newPath;
@@ -179,23 +169,25 @@ var TurnController;
         
         var nextTiles = [];
         
-        nextTiles.push(['left', generatedTerrain.left(generatedTerrain.tile(fromTile.x, fromTile.y))]);
-        nextTiles.push(['top', generatedTerrain.top(generatedTerrain.tile(fromTile.x, fromTile.y))]);
-        nextTiles.push(['right', generatedTerrain.right(generatedTerrain.tile(fromTile.x, fromTile.y))]);
-        nextTiles.push(['bottom', generatedTerrain.bottom(generatedTerrain.tile(fromTile.x, fromTile.y))]);
+        nextTiles.push(generatedTerrain.left(generatedTerrain.tile(fromTile.x, fromTile.y)));
+        nextTiles.push(generatedTerrain.top(generatedTerrain.tile(fromTile.x, fromTile.y)));
+        nextTiles.push(generatedTerrain.right(generatedTerrain.tile(fromTile.x, fromTile.y)));
+        nextTiles.push(generatedTerrain.bottom(generatedTerrain.tile(fromTile.x, fromTile.y)));
         
         while (nextTiles.length > 0) {
             var tileToTest = nextTiles.pop();
-            var result = TurnController.walkUntilAchieveScore(tileToTest[1], scoreToAchieve, tileToTest[0], newWalkScore, newPath, newLimiter);
+            if (!tileToTest || currentPath.indexOf(tileToTest) >= 0) {
+                continue;
+            }
+            var result = TurnController.walkUntilAchieveScore(tileToTest, scoreToAchieve, newWalkScore, newPath, newLimiter);
             if (result) {
                 return result;
             }
         }
-        util.log('didnt find the solution');
+        
         return false;
     }
 };
-
 
 // Number command event
 function onNumCom(data) {
@@ -217,6 +209,11 @@ function onNumCom(data) {
 	
 	var newPath = TurnController.walkUntilAchieveScore(playerCurrentTile, scoreToAchieve);
 	
+	if (!newPath) {
+	    newPath = [];
+	} else {
+	    playerToMove.tile = newPath[newPath.length - 1];
+	}
 	util.log(newPath);
 	
 // 	var arrayPath = [1, 2, 3];

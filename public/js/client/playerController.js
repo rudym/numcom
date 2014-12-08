@@ -15,7 +15,7 @@ function PlayerController(game, socket, guiGroup) {
 
     //text.anchor.setTo(game.camera.x, game.camera.y);
     
-    // guiGroup.add(text);
+    guiGroup.add(text);
     
     this.preload = function () {
     };

@@ -85,7 +85,10 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             //socket = io.connect('http://martynovr.koding.io:3000');
             
             socket = io();
-            pController = new PlayerController(game, socket);
+            
+            
+            guiGroup = game.add.group();
+            pController = new PlayerController(game, socket, guiGroup);
             
             gui.create();
             terrain = game.add.group();
@@ -238,8 +241,12 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
         
         }
         
-        function tweenTo(sprite, tileTo) {
-            var spriteTween = game.add.tween(sprite);
+        function tweenTo(avatar, tileTo) {
+            if(typeof tileTo === "undefined") {
+                console.log("Edge of map");
+                return;
+            }
+            var spriteTween = game.add.tween(avatar.sprite);
             spriteTween.loop(false);
             spriteTween.repeatCounter = 0;
             
@@ -247,36 +254,56 @@ requirejs(['terrain', 'dynamic', 'player'], function(terrainModule, dynamicModul
             Phaser.Easing.Linear.None /*easing type*/, true /*autostart?*/, 100 /*delay*/, false /*yoyo?*/);
             
             spriteTween.repeat(0);
-            player.obj.tile.x = tileTo.x;
-            player.obj.tile.y = tileTo.y;
+            avatar.obj.tile = tileTo;
+        }
+        
+        function tweenByPath(avatar, pathArray) {
+            if(typeof pathArray === "undefined") {
+                console.log("Empty path");
+                return;
+            }
+            if(pathArray.length < 1) {
+                console.log("Path finished");
+                return;
+            }
+            
+            var tileTo = pathArray[0];
+            
+            if (avatar.obj.tile.x > tileTo.x) {
+                avatar.sprite.animations.play('moveLeft');
+            } 
+            else if (avatar.obj.tile.x < tileTo.x) {
+                avatar.sprite.animations.play('moveRight');
+            }
+            else if (avatar.obj.tile.y > tileTo.y) {
+                avatar.sprite.animations.play('moveUp');
+            }
+            else {
+                avatar.sprite.animations.play('moveDown');
+            }
+            
+            var spriteTween = game.add.tween(avatar.sprite);
+            spriteTween.loop(false);
+            spriteTween.repeatCounter = 0;
+            
+            spriteTween.to({x: tileTo.x * 32, y: tileTo.y * 32}, 1000 /*duration of the tween (in ms)*/, 
+            Phaser.Easing.Linear.None /*easing type*/, true /*autostart?*/, 100 /*delay*/, false /*yoyo?*/);
+            
+            spriteTween.repeat(0);
+            avatar.obj.tile = tileTo;
+            
+            spriteTween.onComplete.add(function() {
+                avatar.sprite.animations.play('stop');
+                pathArray.splice(0,1);
+                tweenByPath(avatar, pathArray);
+            }, this);
         }
         
         // Update player position by path array
-        function MovePlayerByPath(player, arPath) {
-            console.log('Should move by path', arPath);
-            var i;
-            for (i = 0; i < arPath.length; i++) {
-                if (arPath[i][0] == 'left')
-                {
-                    player.sprite.animations.play('moveLeft');
-                    tweenTo(player.sprite, rebuiltTerrain.left(player.obj.tile));
-                }
-                else if (arPath[i][0] == 'right')
-                {
-                    player.sprite.animations.play('moveRight');
-                    tweenTo(player.sprite, rebuiltTerrain.right(player.obj.tile));
-                }
-                else if (arPath[i][0] == 'up')
-                {
-                    player.sprite.animations.play('moveUp');
-                    tweenTo(player.sprite, rebuiltTerrain.top(player.obj.tile));
-                }
-                else if (arPath[i][0] == 'down')
-                {
-                    player.sprite.animations.play('moveDown');
-                    tweenTo(player.sprite, rebuiltTerrain.bottom(player.obj.tile));
-                }
-            }
+        function MovePlayerByPath(avatar, arPath) {
+          
+            tweenByPath(avatar, arPath);
+            
         }
         
         function update () {
