@@ -11,10 +11,13 @@ var tumblr = require('tumblr.js');
 var foursquare = require('node-foursquare')({ secrets: secrets.foursquare });
 var Github = require('github-api');
 var Twit = require('twit');
-var stripe =  require('stripe')(secrets.stripe.secretKey);
+var ordrin = require('ordrin-api');
+var stripe = require('stripe')(secrets.stripe.secretKey);
 var twilio = require('twilio')(secrets.twilio.sid, secrets.twilio.token);
 var Linkedin = require('node-linkedin')(secrets.linkedin.clientID, secrets.linkedin.clientSecret, secrets.linkedin.callbackURL);
-var clockwork = require('clockwork')({key: secrets.clockwork.apiKey});
+var clockwork = require('clockwork')({ key: secrets.clockwork.apiKey });
+var paypal = require('paypal-rest-sdk');
+var lob = require('lob')(secrets.lob.apiKey);
 var ig = require('instagram-node').instagram();
 var Y = require('yui/yql');
 var _ = require('lodash');
@@ -23,7 +26,6 @@ var _ = require('lodash');
  * GET /api
  * List of API examples.
  */
-
 exports.getApi = function(req, res) {
   res.render('api/index', {
     title: 'API Examples'
@@ -34,7 +36,6 @@ exports.getApi = function(req, res) {
  * GET /api/foursquare
  * Foursquare API example.
  */
-
 exports.getFoursquare = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'foursquare' });
   async.parallel({
@@ -69,7 +70,6 @@ exports.getFoursquare = function(req, res, next) {
  * GET /api/tumblr
  * Tumblr API example.
  */
-
 exports.getTumblr = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'tumblr' });
   var client = tumblr.createClient({
@@ -92,7 +92,6 @@ exports.getTumblr = function(req, res, next) {
  * GET /api/facebook
  * Facebook API example.
  */
-
 exports.getFacebook = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'facebook' });
   graph.setAccessToken(token.accessToken);
@@ -122,7 +121,6 @@ exports.getFacebook = function(req, res, next) {
  * GET /api/scraping
  * Web scraping example using Cheerio library.
  */
-
 exports.getScraping = function(req, res, next) {
   request.get('https://news.ycombinator.com/', function(err, request, body) {
     if (err) return next(err);
@@ -142,7 +140,6 @@ exports.getScraping = function(req, res, next) {
  * GET /api/github
  * GitHub API Example.
  */
-
 exports.getGithub = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'github' });
   var github = new Github({ token: token.accessToken });
@@ -161,7 +158,6 @@ exports.getGithub = function(req, res, next) {
  * GET /api/aviary
  * Aviary image processing example.
  */
-
 exports.getAviary = function(req, res) {
   res.render('api/aviary', {
     title: 'Aviary API'
@@ -172,7 +168,6 @@ exports.getAviary = function(req, res) {
  * GET /api/nyt
  * New York Times API example.
  */
-
 exports.getNewYorkTimes = function(req, res, next) {
   var query = querystring.stringify({ 'api-key': secrets.nyt.key, 'list-name': 'young-adult' });
   var url = 'http://api.nytimes.com/svc/books/v2/lists?' + query;
@@ -191,7 +186,6 @@ exports.getNewYorkTimes = function(req, res, next) {
  * GET /api/lastfm
  * Last.fm API example.
  */
-
 exports.getLastfm = function(req, res, next) {
   var lastfm = new LastFmNode(secrets.lastfm);
   async.parallel({
@@ -266,7 +260,6 @@ exports.getLastfm = function(req, res, next) {
  * GET /api/twitter
  * Twiter API example.
  */
-
 exports.getTwitter = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'twitter' });
   var T = new Twit({
@@ -288,7 +281,6 @@ exports.getTwitter = function(req, res, next) {
  * POST /api/twitter
  * Post a tweet.
  */
-
 exports.postTwitter = function(req, res, next) {
   req.assert('tweet', 'Tweet cannot be empty.').notEmpty();
   var errors = req.validationErrors();
@@ -314,7 +306,6 @@ exports.postTwitter = function(req, res, next) {
  * GET /api/steam
  * Steam API example.
  */
-
 exports.getSteam = function(req, res, next) {
   var steamId = '76561197982488301';
   var query = { l: 'english', steamid: steamId, key: secrets.steam.apiKey };
@@ -360,7 +351,6 @@ exports.getSteam = function(req, res, next) {
  * GET /api/stripe
  * Stripe API example.
  */
-
 exports.getStripe = function(req, res) {
   res.render('api/stripe', {
     title: 'Stripe API',
@@ -372,7 +362,6 @@ exports.getStripe = function(req, res) {
  * POST /api/stripe
  * Make a payment.
  */
-
 exports.postStripe = function(req, res, next) {
   var stripeToken = req.body.stripeToken;
   var stripeEmail = req.body.stripeEmail;
@@ -395,7 +384,6 @@ exports.postStripe = function(req, res, next) {
  * GET /api/twilio
  * Twilio API example.
  */
-
 exports.getTwilio = function(req, res) {
   res.render('api/twilio', {
     title: 'Twilio API'
@@ -406,7 +394,6 @@ exports.getTwilio = function(req, res) {
  * POST /api/twilio
  * Send a text message using Twilio.
  */
-
 exports.postTwilio = function(req, res, next) {
   req.assert('number', 'Phone number is required.').notEmpty();
   req.assert('message', 'Message cannot be blank.').notEmpty();
@@ -431,7 +418,6 @@ exports.postTwilio = function(req, res, next) {
  * GET /api/clockwork
  * Clockwork SMS API example.
  */
-
 exports.getClockwork = function(req, res) {
   res.render('api/clockwork', {
     title: 'Clockwork SMS API'
@@ -442,7 +428,6 @@ exports.getClockwork = function(req, res) {
  * POST /api/clockwork
  * Send a text message using Clockwork SMS
  */
-
 exports.postClockwork = function(req, res, next) {
   var message = {
     To: req.body.telephone,
@@ -460,7 +445,6 @@ exports.postClockwork = function(req, res, next) {
  * GET /api/venmo
  * Venmo API example.
  */
-
 exports.getVenmo = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'venmo' });
   var query = querystring.stringify({ access_token: token.accessToken });
@@ -490,7 +474,6 @@ exports.getVenmo = function(req, res, next) {
  * POST /api/venmo
  * Send money.
  */
-
 exports.postVenmo = function(req, res, next) {
   req.assert('user', 'Phone, Email or Venmo User ID cannot be blank').notEmpty();
   req.assert('note', 'Please enter a message to accompany the payment').notEmpty();
@@ -529,7 +512,6 @@ exports.postVenmo = function(req, res, next) {
  * GET /api/linkedin
  * LinkedIn API example.
  */
-
 exports.getLinkedin = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'linkedin' });
   var linkedin = Linkedin.init(token.accessToken);
@@ -546,7 +528,6 @@ exports.getLinkedin = function(req, res, next) {
  * GET /api/instagram
  * Instagram API example.
  */
-
 exports.getInstagram = function(req, res, next) {
   var token = _.find(req.user.tokens, { kind: 'instagram' });
   ig.use({ client_id: secrets.instagram.clientID, client_secret: secrets.instagram.clientSecret });
@@ -588,7 +569,6 @@ exports.getInstagram = function(req, res, next) {
  * GET /api/yahoo
  * Yahoo API example.
  */
-
 exports.getYahoo = function(req, res) {
   Y.YQL('SELECT * FROM weather.forecast WHERE (location = 10007)', function(response) {
     var location = response.query.results.channel.location;
@@ -597,6 +577,119 @@ exports.getYahoo = function(req, res) {
       title: 'Yahoo API',
       location: location,
       condition: condition
+    });
+  });
+};
+
+/**
+ * GET /api/ordrin
+ * Ordr.in API example.
+ */
+exports.getOrdrin = function(req, res, next) {
+  var ordrin_api = new ordrin.APIs(secrets.ordrin.secretKey);
+  ordrin_api.delivery_list({
+    datetime: 'ASAP',
+    addr: '199 Chambers St',
+    city: 'New York, NY',
+    zip: '10007'
+  }, function(err, deliveries) {
+    if (err) return next(err);
+    res.render('api/ordrin', {
+      title: 'Ordr.in API',
+      deliveries: deliveries
+    });
+  });
+};
+
+/**
+ * GET /api/paypal
+ * PayPal SDK example.
+ */
+exports.getPayPal = function(req, res, next) {
+  paypal.configure({
+    mode: 'sandbox',
+    client_id: secrets.paypal.client_id,
+    client_secret: secrets.paypal.client_secret
+  });
+
+  var paymentDetails = {
+    intent: 'sale',
+    payer: {
+      payment_method: 'paypal'
+    },
+    redirect_urls: {
+      return_url: secrets.paypal.returnUrl,
+      cancel_url: secrets.paypal.cancelUrl
+    },
+    transactions: [{
+      description: 'Hackathon Starter',
+      amount: {
+        currency: 'USD',
+        total: '1.99'
+      }
+    }]
+  };
+
+  paypal.payment.create(paymentDetails, function(err, payment) {
+    if (err) return next(err);
+    req.session.paymentId = payment.id;
+    var links = payment.links;
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].rel === 'approval_url') {
+        res.render('api/paypal', {
+          approvalUrl: links[i].href
+        });
+      }
+    }
+  });
+};
+
+/**
+ * GET /api/paypal/success
+ * PayPal SDK example.
+ */
+exports.getPayPalSuccess = function(req, res) {
+  var paymentId = req.session.paymentId;
+  var paymentDetails = { payer_id: req.query.PayerID };
+  paypal.payment.execute(paymentId, paymentDetails, function(err) {
+    if (err) {
+      res.render('api/paypal', {
+        result: true,
+        success: false
+      });
+    } else {
+      res.render('api/paypal', {
+        result: true,
+        success: true
+      });
+    }
+  });
+};
+
+/**
+ * GET /api/paypal/cancel
+ * PayPal SDK example.
+ */
+exports.getPayPalCancel = function(req, res) {
+  req.session.paymentId = null;
+  res.render('api/paypal', {
+    result: true,
+    canceled: true
+  });
+};
+
+/**
+ * GET /api/lob
+ * Lob API example.
+ */
+exports.getLob = function(req, res, next) {
+  lob.routes.list({
+    zip_codes: ['10007'] 
+  }, function(err, routes) {
+    if(err) return next(err); 
+    res.render('api/lob', {
+      title: 'Lob API',
+      routes: routes.data[0].routes
     });
   });
 };

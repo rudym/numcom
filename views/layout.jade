@@ -7,7 +7,8 @@ html
     meta(name='csrf-token', content=_csrf)
     title #{title} - Number Commander Game
     != css('main')
-    script(src='/socket.io/socket.io.js')
+    //script(src='/socket.io/socket.io.js')
+    script(src='https://cdn.socket.io/socket.io-1.3.4.js')
     script(src='/static/shared/require.js' data-main='/static/shared/terrain.js')
     script.
         var socket = io.connect(window.location.href);

@@ -1,27 +1,27 @@
 /**
- * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT * IMPORTANT *
+ * IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT
  *
  * You should never commit this file to a public repository on GitHub!
  * All public code on GitHub can be searched, that means anyone can see your
  * uploaded secrets.js file.
  *
- * I did it for your convenience using "throw away" credentials so that
- * all features could work out of the box.
+ * I did it for your convenience using "throw away" API keys and passwords so
+ * that all features could work out of the box.
  *
- * Untrack secrets.js before pushing your code to public GitHub repository:
+ * Use config vars (environment variables) below for production API keys
+ * and passwords. Each PaaS (e.g. Heroku, Nodejitsu, OpenShift, Azure) has a way
+ * for you to set it up from the dashboard.
  *
- * git rm --cached config/secrets.js
- *
- * If you have already commited this file to GitHub with your keys, then
- * refer to https://help.github.com/articles/remove-sensitive-data
-*/
+ * Another added benefit of this approach is that you can use two different
+ * sets of keys for local development and production mode without making any
+ * changes to the code.
+
+ * IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT  IMPORTANT
+ */
 
 module.exports = {
-
   db: process.env.MONGOLAB_URI || process.env.MONGODB || 'mongodb://koding:koding2014@dogen.mongohq.com:10089/freemongo',
-
   sessionSecret: process.env.SESSION_SECRET || 'Your Session Secret goes here',
-
   mailgun: {
     user: process.env.MAILGUN_USER || 'postmaster@sandbox697fcddc09814c6b83718b9fd5d4e5dc.mailgun.org',
     password: process.env.MAILGUN_PASSWORD || '29eldds1uri6'
@@ -84,7 +84,7 @@ module.exports = {
   linkedin: {
     clientID: process.env.LINKEDIN_ID || '77chexmowru601',
     clientSecret: process.env.LINKEDIN_SECRET || 'szdC8lN2s2SuMSy8',
-    callbackURL: '/auth/linkedin/callback',
+    callbackURL: process.env.LINKEDIN_CALLBACK_URL || 'http://localhost:3000/auth/linkedin/callback',
     scope: ['r_fullprofile', 'r_emailaddress', 'r_network'],
     passReqToCallback: true
   },
@@ -123,5 +123,22 @@ module.exports = {
     clientId: process.env.VENMO_ID || '1688',
     clientSecret: process.env.VENMO_SECRET || 'uQXtNBa6KVphDLAEx8suEush3scX8grs',
     redirectUrl: process.env.VENMO_REDIRECT_URL || 'http://localhost:3000/auth/venmo/callback'
+  },
+
+  ordrin: {
+    publicKey: process.env.ORDRIN_PUBLIC || 'G35-rSt76CXpUEOlqXYNMC84ZbdFUKN_plHVHVYhdeU',
+    secretKey: process.env.ORDRIN_SECRET || 'bcoOR_2z6gQDZuEOcw1yTt6THFPK9KmvywG7UJD7pqQ'
+  },
+
+  paypal: {
+    host: 'api.sandbox.paypal.com',
+    client_id: process.env.PAYPAL_ID || 'AdGE8hDyixVoHmbhASqAThfbBcrbcgiJPBwlAM7u7Kfq3YU-iPGc6BXaTppt',
+    client_secret: process.env.PAYPAL_SECRET || 'EPN0WxB5PaRaumTB1ZpCuuTqLqIlF6_EWUcAbZV99Eu86YeNBVm9KVsw_Ez5',
+    returnUrl: process.env.PAYPAL_RETURN_URL || 'http://localhost:3000/api/paypal/success',
+    cancelUrl: process.env.PAYPAL_CANCEL_URL || 'http://localhost:3000/api/paypal/cancel'
+  },
+
+  lob: {
+    apiKey: process.env.LOB_KEY || 'test_814e892b199d65ef6dbb3e4ad24689559ca'
   }
 };
